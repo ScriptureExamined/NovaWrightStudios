@@ -19,38 +19,68 @@ title: Games 'N Things
     Art|Marketing|Design|Events|Tutorials|Development|Portfolio" | split: "|" %}
 
     <div class="blog-categories-wrap">
-      <div class="category-grid">
-        {% for cat in category_order %} {% assign matching_posts =
-        site.categories[cat] %} {% case cat %} {% when "General" %} {% assign
-        category_desc = "General thoughts and studio updates." %} {% when
-        "Announcements" %} {% assign category_desc = "Official NovaWright
-        Studios news." %} {% when "Studio News" %} {% assign category_desc =
-        "Behind-the-scenes development updates." %} {% when "Industry" %} {%
-        assign category_desc = "Industry trends and developer insights." %} {%
-        when "Concept Art" %} {% assign category_desc = "Artwork, sketches, and
-        visual ideas." %} {% when "Marketing" %} {% assign category_desc =
-        "Growing an audience and promoting games." %} {% when "Design" %} {%
-        assign category_desc = "Game mechanics and design philosophy." %} {%
-        when "Events" %} {% assign category_desc = "Shows, conventions, and
-        announcements." %} {% when "Procedural Generation" %} {% assign
-        category_desc = "Algorithms and techniques for generating worlds,
-        levels, and game content." %} {% when "Tutorials" %} {% assign
-        category_desc = "Step-by-step development guides." %} {% when
-        "Development" %} {% assign category_desc = "Programming, tools, and
-        project progress." %} {% when "Portfolio" %} {% assign category_desc =
-        "Completed work and featured projects." %} {% else %} {% assign
-        category_desc = "Posts from this category." %} {% endcase %} {% if
-        matching_posts and matching_posts.size > 0 %}
+  <div class="category-grid">
+
+    {% for cat in category_order %}
+      {% assign matching_posts = site.categories[cat] %}
+
+      {% case cat %}
+        {% when "General" %}
+          {% assign category_desc = "General thoughts and studio updates." %}
+
+        {% when "Announcements" %}
+          {% assign category_desc = "Official NovaWright Studios news." %}
+
+        {% when "Studio News" %}
+          {% assign category_desc = "Behind-the-scenes development updates." %}
+
+        {% when "Industry" %}
+          {% assign category_desc = "Industry trends and developer insights." %}
+
+        {% when "Concept Art" %}
+          {% assign category_desc = "Artwork, sketches, and visual ideas." %}
+
+        {% when "Marketing" %}
+          {% assign category_desc = "Growing an audience and promoting games." %}
+
+        {% when "Design" %}
+          {% assign category_desc = "Game mechanics and design philosophy." %}
+
+        {% when "Events" %}
+          {% assign category_desc = "Shows, conventions, and announcements." %}
+
+        {% when "Procedural Generation" %}
+          {% assign category_desc = "Algorithms and techniques for generating worlds, levels, and game content." %}
+
+        {% when "Tutorials" %}
+          {% assign category_desc = "Step-by-step development guides." %}
+
+        {% when "Development" %}
+          {% assign category_desc = "Programming, tools, and project progress." %}
+
+        {% when "Portfolio" %}
+          {% assign category_desc = "Completed work and featured projects." %}
+
+        {% else %}
+          {% assign category_desc = "Posts from this category." %}
+      {% endcase %}
+
+      {% if matching_posts and matching_posts.size > 0 %}
+        {% assign cat_slug = cat | slugify %}
+
         <a
           class="category-card"
-          href="{{ '/' | append: cat | slugify | append: '.html' | relative_url }}"
+          href="{{ '/categories/' | append: cat_slug | append: '.html' | relative_url }}"
         >
           <h3>{{ cat }}</h3>
           <p>{{ category_desc }}</p>
         </a>
-        {% endif %} {% endfor %}
-      </div>
-    </div>
+      {% endif %}
+
+    {% endfor %}
+
+  </div>
+</div>
 
     <div class="blog-post-list">
       {% for post in site.posts %}
