@@ -2,7 +2,7 @@
 layout: post
 title: "Procedural Generation Isn't About Building Bigger Games"
 date: 2026-07-06
-author: Roberta
+author: Stan
 categories: [Procedural Generation]
 published: true
 excerpt: >
