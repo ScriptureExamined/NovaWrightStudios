@@ -1,0 +1,60 @@
+---
+layout: default
+---
+
+<section class="section page-intro blog-intro">
+  <div class="container">
+    <div class="section-header centered">
+      <div class="section-label">Category</div>
+      <h1 class="section-title">{{ page.title }}</h1>
+
+      {% assign category_data = site.data.categories | where: "name", page.category | first %}
+      {% if category_data %}
+        <p class="section-desc">{{ category_data.description }}</p>
+      {% else %}
+        <p class="section-desc">Posts from this category.</p>
+      {% endif %}
+    </div>
+
+    {% assign category_posts = site.categories[page.category] %}
+
+    {% if category_posts and category_posts.size > 0 %}
+      <div class="blog-post-list">
+        {% for post in category_posts %}
+          <article class="post-card">
+            <div class="post-meta-top">
+              <span class="post-date">{{ post.date | date: "%b %-d, %Y" }}</span>
+            </div>
+
+            <h2 class="post-title">
+              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+            </h2>
+
+            <div class="post-meta">
+              {% if post.categories and post.categories.size > 0 %}
+                <span class="post-category">Category: {{ post.categories[0] }}</span>
+              {% endif %}
+              <span class="post-author">Posted by: {{ post.author | default: site.author }}</span>
+            </div>
+
+            <div class="post-excerpt">
+              {% if post.excerpt %}
+                {{ post.excerpt }}
+              {% else %}
+                <p>{{ post.content | strip_html | truncatewords: 60 }}</p>
+              {% endif %}
+            </div>
+
+            <div class="post-more">
+              <a href="{{ post.url | relative_url }}">More</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="post-card">
+        <p>No posts have been published in this category yet.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
