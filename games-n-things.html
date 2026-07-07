@@ -14,87 +14,79 @@ title: Games 'N Things
       </p>
     </div>
 
-    {% assign category_order = "General|Announcements|Studio News|Procedural Generation|Industry|Concept Art|Marketing|Design|Events|Tutorials|Development|Portfolio" | split: "|" %}
+    {% assign category_order = "General|Announcements|Studio News|Procedural
+    Generation|Industry|Concept
+    Art|Marketing|Design|Events|Tutorials|Development|Portfolio" | split: "|" %}
 
     <div class="blog-categories-wrap">
       <div class="category-grid">
-        {% for cat in category_order %}
-          {% assign matching_posts = site.categories[cat] %}
-
-          {% case cat %}
-            {% when "General" %}
-              {% assign category_desc = "General thoughts and studio updates." %}
-            {% when "Announcements" %}
-              {% assign category_desc = "Official NovaWright Studios news." %}
-            {% when "Studio News" %}
-              {% assign category_desc = "Behind-the-scenes development updates." %}
-            {% when "Industry" %}
-              {% assign category_desc = "Industry trends and developer insights." %}
-            {% when "Concept Art" %}
-              {% assign category_desc = "Artwork, sketches, and visual ideas." %}
-            {% when "Marketing" %}
-              {% assign category_desc = "Growing an audience and promoting games." %}
-            {% when "Design" %}
-              {% assign category_desc = "Game mechanics and design philosophy." %}
-            {% when "Events" %}
-              {% assign category_desc = "Shows, conventions, and announcements." %}
-              {% when "Procedural Generation" %}
-  {% assign category_desc = "Algorithms and techniques for generating worlds, levels, and game content." %}
-            {% when "Tutorials" %}
-              {% assign category_desc = "Step-by-step development guides." %}
-            {% when "Development" %}
-              {% assign category_desc = "Programming, tools, and project progress." %}
-            {% when "Portfolio" %}
-              {% assign category_desc = "Completed work and featured projects." %}
-            {% else %}
-              {% assign category_desc = "Posts from this category." %}
-          {% endcase %}
-
-          {% if matching_posts and matching_posts.size > 0 %}
-            <a class="category-card" href="{{ '/categories/' | append: cat | slugify | append: '.html' | relative_url }}">
-              <h3>{{ cat }}</h3>
-              <p>{{ category_desc }}</p>
-            </a>
-          {% else %}
-            <div class="category-card category-card-disabled">
-              <h3>{{ cat }}</h3>
-              <p>{{ category_desc }}</p>
-            </div>
-          {% endif %}
-        {% endfor %}
+        {% for cat in category_order %} {% assign matching_posts =
+        site.categories[cat] %} {% case cat %} {% when "General" %} {% assign
+        category_desc = "General thoughts and studio updates." %} {% when
+        "Announcements" %} {% assign category_desc = "Official NovaWright
+        Studios news." %} {% when "Studio News" %} {% assign category_desc =
+        "Behind-the-scenes development updates." %} {% when "Industry" %} {%
+        assign category_desc = "Industry trends and developer insights." %} {%
+        when "Concept Art" %} {% assign category_desc = "Artwork, sketches, and
+        visual ideas." %} {% when "Marketing" %} {% assign category_desc =
+        "Growing an audience and promoting games." %} {% when "Design" %} {%
+        assign category_desc = "Game mechanics and design philosophy." %} {%
+        when "Events" %} {% assign category_desc = "Shows, conventions, and
+        announcements." %} {% when "Procedural Generation" %} {% assign
+        category_desc = "Algorithms and techniques for generating worlds,
+        levels, and game content." %} {% when "Tutorials" %} {% assign
+        category_desc = "Step-by-step development guides." %} {% when
+        "Development" %} {% assign category_desc = "Programming, tools, and
+        project progress." %} {% when "Portfolio" %} {% assign category_desc =
+        "Completed work and featured projects." %} {% else %} {% assign
+        category_desc = "Posts from this category." %} {% endcase %} {% if
+        matching_posts and matching_posts.size > 0 %}
+        <a
+          class="category-card"
+          href="{{ '/' | append: cat | slugify | append: '.html' | relative_url }}"
+        >
+          <h3>{{ cat }}</h3>
+          <p>{{ category_desc }}</p>
+        </a>
+        {% else %}
+        <div class="category-card category-card-disabled">
+          <h3>{{ cat }}</h3>
+          <p>{{ category_desc }}</p>
+        </div>
+        {% endif %} {% endfor %}
       </div>
     </div>
 
     <div class="blog-post-list">
       {% for post in site.posts %}
-        <article class="post-card">
-          <div class="post-meta-top">
-            <span class="post-date">{{ post.date | date: "%b %-d, %Y" }}</span>
-          </div>
+      <article class="post-card">
+        <div class="post-meta-top">
+          <span class="post-date">{{ post.date | date: "%b %-d, %Y" }}</span>
+        </div>
 
-          <h2 class="post-title">
-            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-          </h2>
+        <h2 class="post-title">
+          <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        </h2>
 
-          <div class="post-meta">
-            {% if post.categories and post.categories.size > 0 %}
-              <span class="post-category">Category: {{ post.categories[0] }}</span>
-            {% endif %}
-            <span class="post-author">Posted by: {{ post.author | default: site.author }}</span>
-          </div>
+        <div class="post-meta">
+          {% if post.categories and post.categories.size > 0 %}
+          <span class="post-category">Category: {{ post.categories[0] }}</span>
+          {% endif %}
+          <span class="post-author"
+            >Posted by: {{ post.author | default: site.author }}</span
+          >
+        </div>
 
-          <div class="post-excerpt">
-            {% if post.excerpt %}
-              {{ post.excerpt }}
-            {% else %}
-              <p>{{ post.content | strip_html | truncatewords: 60 }}</p>
-            {% endif %}
-          </div>
+        <div class="post-excerpt">
+          {% if post.excerpt %} {{ post.excerpt }} {% else %}
+          <p>{{ post.content | strip_html | truncatewords: 60 }}</p>
+          {% endif %}
+        </div>
 
-          <div class="post-more">
-            <a href="{{ post.url | relative_url }}">More</a>
-          </div>
-        </article>
+        <div class="post-more">
+          <a href="{{ post.url | relative_url }}">More</a>
+        </div>
+      </article>
       {% endfor %}
     </div>
   </div>
