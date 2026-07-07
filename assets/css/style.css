@@ -597,6 +597,49 @@ a:hover {
     color: #008080;
 }
 
+.compact-categories {
+    margin: 28px auto 38px;
+}
+
+.category-link-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px 14px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.category-link-pill {
+    display: block;
+    padding: 10px 14px;
+    background: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    color: #00bfff;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+}
+
+.category-link-pill:hover {
+    border-color: #00bfff;
+    background: #303030;
+    color: #e0e0e0;
+    text-decoration: none;
+}
+
+@media (max-width: 900px) {
+    .category-link-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 520px) {
+    .category-link-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* ==========================================================================
    12. SINGLE BLOG POST
    ========================================================================== */
