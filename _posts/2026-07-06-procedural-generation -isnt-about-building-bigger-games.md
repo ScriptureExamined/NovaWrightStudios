@@ -3,7 +3,7 @@ layout: post
 title: "Procedural Generation Isn't About Building Bigger Games"
 date: 2026-07-06
 author: Stan
-categories: [Procedural Generation]
+categories: [Procedural Design]
 published: true
 excerpt: >
   Procedural generation is often associated with endless worlds and infinite content, but its greatest strength is helping developers create more meaningful gameplay with less repetitive work. Used thoughtfully, it can improve quality just as much as quantity.
