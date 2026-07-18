@@ -1,4 +1,3 @@
-```markdown
 ---
 layout: post
 title: "Why Finishing a Game Is Harder Than Starting One"
