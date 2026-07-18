@@ -3,7 +3,7 @@ layout: post
 title: "The Difference Between Difficulty and Complexity in Puzzle Game Design"
 date: 2026-06-22
 author: Stan
-categories: [Game Design]
+categories: [Design]
 published: true
 excerpt: >
   Many puzzle games become difficult by becoming more complex, but the two concepts are not the same. Understanding the difference can help developers create more engaging challenges while avoiding player frustration.

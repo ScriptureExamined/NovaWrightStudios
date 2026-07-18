@@ -3,7 +3,7 @@ layout: post
 title: "Why Finishing a Game Is Harder Than Starting One"
 date: 2026-07-13
 author: Stan
-categories: [Solo Developer Life]
+categories: [Development]
 published: true
 excerpt: >
   Every game begins with excitement, but finishing one requires something far less glamorous: persistence. For solo developers, success is often determined not by talent alone, but by the ability to keep moving forward long after the novelty wears off.
