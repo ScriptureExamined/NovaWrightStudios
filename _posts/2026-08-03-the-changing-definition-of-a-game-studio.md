@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "The Changing Definition of a Game Studio"
-date: 2026-08-07
+date: 2026-08-03
 author: Stan
 categories: [Industry]
 published: true
