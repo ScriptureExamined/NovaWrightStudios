@@ -2,7 +2,7 @@
 layout: post
 title: "Designing Games That Respect the Player's Time"
 date: 2026-07-20
-author: STan
+author: Stan
 categories: [Design]
 published: true
 excerpt: >
