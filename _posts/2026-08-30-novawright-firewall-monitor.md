@@ -5,7 +5,7 @@ date: 2026-08-30
 author: Stan
 categories: [Software, Portfolio, Utilities]
 published: true
-featured: false
+featured: true
 excerpt: >
   NovaWright Firewall Monitor makes it easy to temporarily disable Windows Firewall when you need to test software, troubleshoot network problems, or perform other tasks that require the firewall to be temporarily turned off. Built-in timers, automatic restoration, warnings, diagnostics, and emergency controls help make the process faster and safer.
 ---
