@@ -52,9 +52,7 @@ The application is designed to stay out of your way while still giving you immed
 
 ## Quick Firewall Control from the System Tray
 
-Once NovaWright Firewall Monitor is running, its icon appears in the Windows system tray.
-
-A quick **left-click** gives you immediate control.
+Once NovaWright Firewall Monitor is running, its icon appears in the Windows system tray. A quick **left-click** gives you immediate control.
 
 ### When the Firewall Is Fully On
 
@@ -72,9 +70,7 @@ If some profiles are on while others are off, the application will ask what you 
 
 ## See Your Firewall Status at a Glance
 
-You don't have to open the main window just to check what's happening.
-
-Simply hover over the tray icon.
+You don't have to open the main window just to check what's happening. Simply hover over the tray icon.
 
 The tooltip can show:
 
@@ -113,21 +109,15 @@ You can also select:
 
 ## Disable Until a Specific Date and Time
 
-Sometimes a fixed number of minutes isn't what you need.
+Sometimes a fixed number of minutes isn't what you need. For those situations, NovaWright Firewall Monitor includes **Disable until…**
 
-For those situations, NovaWright Firewall Monitor includes **Disable until…**
-
-You can choose a specific date and time when the firewall should automatically be restored.
-
-This can be useful when you're performing a longer troubleshooting session or working with software that requires the firewall to remain temporarily disabled.
+You can choose a specific date and time when the firewall should automatically be restored. This can be useful when you're performing a longer troubleshooting session or working with software that requires the firewall to remain temporarily disabled.
 
 ---
 
 ## Custom Disable Durations
 
-You're not restricted to the preset timer values.
-
-Choose **Custom duration** to enter the number of minutes you need.
+You're not restricted to the preset timer values. Choose **Custom duration** to enter the number of minutes you need.
 
 For example:
 
@@ -143,9 +133,7 @@ Once the timer expires, the application restores the firewall according to its p
 
 ## Add or Subtract Time Without Starting Over
 
-Sometimes you realize that you need a few more minutes.
-
-You don't have to disable the firewall again.
+Sometimes you realize that you need a few more minutes. You don't have to disable the firewall again.
 
 From the tray menu, simply choose:
 
@@ -163,11 +151,7 @@ You can adjust the active countdown while you're working.
 
 ## Pause and Resume the Timer
 
-Need to temporarily stop the countdown?
-
-NovaWright Firewall Monitor lets you **Pause** the timer.
-
-When you're ready to continue, choose **Resume**.
+Need to temporarily stop the countdown? NovaWright Firewall Monitor lets you **Pause** the timer. When you're ready to continue, choose **Resume**.
 
 This can be useful when your testing or troubleshooting gets interrupted and you don't want the timer continuing to run while you're away.
 
@@ -189,13 +173,9 @@ Each profile clearly shows whether it is currently **On** or **Off**.
 
 ## Control Individual Firewall Profiles
 
-You don't always need to turn off the entire firewall.
+You don't always need to turn off the entire firewall. That's why each firewall profile can be controlled individually.
 
-That's why each firewall profile can be controlled individually.
-
-The **Turn off** button under a profile temporarily disables that specific profile and starts its own timer.
-
-The **Turn on** button immediately restores that profile.
+The **Turn off** button under a profile temporarily disables that specific profile and starts its own timer. The **Turn on** button immediately restores that profile.
 
 This gives you more precise control when troubleshooting.
 
@@ -207,33 +187,21 @@ This gives you more precise control when troubleshooting.
 
 The main window includes a:
 
-**Disable (Default)**
-
-button.
-
-This temporarily disables all firewall profiles using the default duration configured in Settings.
+**Disable (Default)** button. This temporarily disables all firewall profiles using the default duration configured in Settings.
 
 There's also a:
 
-**Disable until…**
-
-option for choosing a specific restoration date and time.
+**Disable until…** option for choosing a specific restoration date and time.
 
 And if you need complete control over the duration:
 
-**Custom duration**
-
-allows you to enter the exact number of minutes you need.
+**Custom duration** allows you to enter the exact number of minutes you need.
 
 ---
 
 ## Restore the Previous Firewall State
 
-One of the important features of NovaWright Firewall Monitor is its ability to remember the firewall state before a full disable.
-
-When the timer expires, the application restores that previous state.
-
-This is important because not every computer necessarily has all three firewall profiles configured the same way.
+One of the important features of NovaWright Firewall Monitor is its ability to remember the firewall state before a full disable. When the timer expires, the application restores that previous state. This is important because not every computer necessarily has all three firewall profiles configured the same way.
 
 > If a profile was already disabled before you started, the application can preserve that state rather than blindly turning everything on.
 
@@ -241,47 +209,31 @@ This is important because not every computer necessarily has all three firewall 
 
 ## Emergency Enable
 
-Sometimes you don't want to wait for the timer.
+Sometimes you don't want to wait for the timer. Maybe you've finished testing. Maybe you've connected to a different network. Or perhaps you simply want your firewall protection restored immediately.
 
-Maybe you've finished testing.
-
-Maybe you've connected to a different network.
-
-Or perhaps you simply want your firewall protection restored immediately.
-
-NovaWright Firewall Monitor includes **Emergency Enable**.
-
-From the main window, this forces all firewall profiles back on immediately.
+NovaWright Firewall Monitor includes **Emergency Enable**. From the main window, this forces all firewall profiles back on immediately.
 
 The system tray also includes:
 
-**Restore Firewall (Emergency)**
-
-so you can restore protection without opening the main window.
+**Restore Firewall (Emergency)** so you can restore protection without opening the main window.
 
 ---
 
 ## Built-In Safety Warnings
 
-Disabling a firewall is not something that should be done casually.
-
-NovaWright Firewall Monitor therefore includes several features designed to help prevent accidental or unnecessarily long firewall disables.
+Disabling a firewall is not something that should be done casually. NovaWright Firewall Monitor therefore includes several features designed to help prevent accidental or unnecessarily long firewall disables.
 
 ### Public Network Warning
 
 The **Public** firewall profile deserves particular attention.
 
-When you're connected to a public network, such as Wi-Fi at a coffee shop, hotel, airport, library, restaurant, or other public location, turning off the Public firewall profile can significantly reduce your protection.
-
-NovaWright Firewall Monitor warns you when you're taking this step.
+When you're connected to a public network, such as Wi-Fi at a coffee shop, hotel, airport, library, restaurant, or other public location, turning off the Public firewall profile can significantly reduce your protection. NovaWright Firewall Monitor warns you when you're taking this step.
 
 > **Be especially careful when disabling the firewall on a Public network.**
 
 ### Countdown Notifications
 
-It can be easy to become focused on whatever you're testing and forget about the firewall timer.
-
-NovaWright Firewall Monitor can provide warning notifications as the timer approaches expiration.
+It can be easy to become focused on whatever you're testing and forget about the firewall timer. NovaWright Firewall Monitor can provide warning notifications as the timer approaches expiration.
 
 Warnings can occur at:
 
@@ -293,17 +245,13 @@ This gives you an opportunity to finish what you're doing or extend the timer if
 
 ### Confirmation Before Long Disables
 
-You can also enable confirmation before longer firewall disables.
-
-This adds another opportunity to stop and reconsider before leaving the firewall disabled for an extended period.
+You can also enable confirmation before longer firewall disables. This adds another opportunity to stop and reconsider before leaving the firewall disabled for an extended period.
 
 ---
 
 ## Detect Changes Made Outside the Application
 
-NovaWright Firewall Monitor doesn't only keep track of changes made through its own controls.
-
-If the firewall state changes elsewhere in Windows, the application can detect the change.
+NovaWright Firewall Monitor doesn't only keep track of changes made through its own controls. If the firewall state changes elsewhere in Windows, the application can detect the change.
 
 For example, a change made through **Windows Security** can appear in the application's history as:
 
@@ -353,9 +301,7 @@ Press:
 
 **Ctrl + Shift + F**
 
-The keyboard shortcut performs the same action as left-clicking the system tray icon.
-
-That means you can quickly access the firewall controls without opening the main window or navigating through Windows settings.
+The keyboard shortcut performs the same action as left-clicking the system tray icon. That means you can quickly access the firewall controls without opening the main window or navigating through Windows settings.
 
 ---
 
@@ -374,11 +320,7 @@ This lets you configure the quick-disable behavior around the way you normally w
 
 ### Restoration Sound
 
-You can optionally have NovaWright Firewall Monitor play a sound when the firewall is restored.
-
-You can also specify your own **WAV file**.
-
-This provides an audible indication that the firewall protection has been restored.
+You can optionally have NovaWright Firewall Monitor play a sound when the firewall is restored. You can also specify your own **WAV file**. This provides an audible indication that the firewall protection has been restored.
 
 ### Warning Notifications
 
@@ -392,25 +334,17 @@ Available warning points include:
 
 ### Confirmation Before Long Disables
 
-Enable confirmation prompts before longer firewall disables.
-
-This provides an additional safety check before making a potentially significant change to your system's protection.
+Enable confirmation prompts before longer firewall disables. This provides an additional safety check before making a potentially significant change to your system's protection.
 
 ### Start with Windows
 
-NovaWright Firewall Monitor can be configured to start with Windows when permitted by the system.
-
-This allows the application to remain available in the system tray whenever you need it.
+NovaWright Firewall Monitor can be configured to start with Windows when permitted by the system. This allows the application to remain available in the system tray whenever you need it.
 
 ---
 
 ## Designed for Testing and Troubleshooting
 
-NovaWright Firewall Monitor isn't intended to replace Windows Security.
-
-It's also not designed to encourage users to leave their firewall disabled.
-
-Instead, it's a convenience and troubleshooting tool for situations where you **intentionally need temporary firewall control**.
+NovaWright Firewall Monitor isn't intended to replace Windows Security. It's also not designed to encourage users to leave their firewall disabled. Instead, it's a convenience and troubleshooting tool for situations where you **intentionally need temporary firewall control**.
 
 The basic workflow is simple:
 
@@ -424,9 +358,7 @@ And if you're finished early:
 
 ## Why Use NovaWright Firewall Monitor?
 
-Without a dedicated utility, temporarily disabling Windows Firewall can involve navigating through Windows settings, finding the appropriate firewall controls, making the change, and then remembering to reverse it later.
-
-NovaWright Firewall Monitor puts those controls right where they're easy to reach.
+Without a dedicated utility, temporarily disabling Windows Firewall can involve navigating through Windows settings, finding the appropriate firewall controls, making the change, and then remembering to reverse it later. NovaWright Firewall Monitor puts those controls right where they're easy to reach.
 
 You get:
 
@@ -484,7 +416,7 @@ All from one small Windows utility.
 
 NovaWright Firewall Monitor is being developed as a **free Windows utility** and is being made available through the **Microsoft Store**.
 
-It was built for people who occasionally need to temporarily disable Windows Firewall while testing software, troubleshooting network problems, or working with applications that require temporary firewall changes.
+It was built for people who occasionally need to temporarily disable Windows Firewall while testing software, troubleshooting network problems, or working with applications that require temporary firewall changes. 
 
 Rather than making you navigate through Windows settings every time, NovaWright Firewall Monitor puts the controls in your system tray, gives you flexible timers, and helps make sure the firewall gets restored when you're finished.
 
@@ -492,9 +424,7 @@ Rather than making you navigate through Windows settings every time, NovaWright 
 
 ## One Final Reminder
 
-Windows Firewall is an important part of your computer's security.
-
-**Don't leave it disabled unless you have a reason to do so.**
+Windows Firewall is an important part of your computer's security. **Don't leave it disabled unless you have a reason to do so.**
 
 NovaWright Firewall Monitor is designed around a simple idea:
 
@@ -506,9 +436,7 @@ NovaWright Firewall Monitor is designed around a simple idea:
 
 # Get NovaWright Firewall Monitor
 
-NovaWright Firewall Monitor is available as a **free Windows application** through the Microsoft Store.
-
-Keep it in your system tray for those times when you need fast, controlled access to Windows Firewall.
+NovaWright Firewall Monitor is available as a **free Windows application** through the Microsoft Store. Keep it in your system tray for those times when you need fast, controlled access to Windows Firewall.
 
 **Disable. Test. Troubleshoot. Restore.**
 
