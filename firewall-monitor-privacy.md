@@ -1,6 +1,6 @@
 ---
 
-layout: default
+layout: page
 title: "Privacy Policy — NovaWright Firewall Monitor"
 permalink: /firewall-monitor-privacy.html
 -----------------------------------------
