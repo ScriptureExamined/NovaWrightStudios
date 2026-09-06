@@ -441,3 +441,15 @@ NovaWright Firewall Monitor is available as a **free Windows application** throu
 **Disable. Test. Troubleshoot. Restore.**
 
 ---
+
+<script type="module" src="https://get.microsoft.com/badge/ms-store-badge.bundled.js"></script>
+<ms-store-badge
+	productid="9PCD4JHH885D"
+	cid="gitpages"
+	productname="NovaWright Firewall Monitor"
+	window-mode="direct"
+	theme="auto"
+	size="large"
+	language="en-us"
+	animation="on">
+</ms-store-badge>
