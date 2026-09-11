@@ -157,7 +157,7 @@ And ideally, the player should gradually learn to think in terms of **when** som
 
 ---
 
-## WFinal Thought
+## Final Thought
 
 So imagine you're standing in front of that locked door. You've searched the room. You've checked the shelves. You've looked everywhere for a key.
 
