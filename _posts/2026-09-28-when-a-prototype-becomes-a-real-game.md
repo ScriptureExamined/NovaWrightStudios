@@ -6,7 +6,7 @@ author: Stan
 categories: [Game Development]
 published: true
 excerpt: >
-A prototype can prove that an idea works, but turning that idea into a real game requires a different kind of development.
+    A prototype can prove that an idea works, but turning that idea into a real game requires a different kind of development.
 ---
 
 # When a Prototype Becomes a Real Game
