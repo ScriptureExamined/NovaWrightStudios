@@ -8,7 +8,7 @@ categories: [Game Design]
 published: true
 excerpt: >
 A simple ruleset does not have to produce a simple game. Depth often comes from the interactions between a small number of well-designed rules.
------------------------------------------------------------------------------------------------------------------------------------------------
+---
 
 # Why Simple Games Can Be Surprisingly Deep
 
