@@ -1,5 +1,4 @@
 ---
-
 layout: post
 title: "When a Prototype Becomes a Real Game"
 date: 2026-09-28
