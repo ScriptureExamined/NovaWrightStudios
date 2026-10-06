@@ -1,5 +1,4 @@
 ---
-
 layout: post
 title: "Why Simple Games Can Be Surprisingly Deep"
 date: 2026-10-05
