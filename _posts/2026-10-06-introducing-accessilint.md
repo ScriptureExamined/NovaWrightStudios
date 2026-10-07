@@ -2,7 +2,7 @@
 layout: post
 title: "Introducing AccessiLint: WCAG 2.1 AA Accessibility Checking Right Inside Visual Studio"
 date: 2026-10-06
-categories: [Software, Portfolio]
+categories: [Applications, Portfolio]
 published: true
 featured: true
 tags: [wcag, accessibility, visual-studio, extension, a11y, html, razor, css]
