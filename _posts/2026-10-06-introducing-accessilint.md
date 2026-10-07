@@ -80,4 +80,4 @@ Accessibility is a practice, not a checkbox. AccessiLint is designed to make tha
 
 ---
 
-*AccessiLint is published on the Visual Studio Marketplace by [NovaWright Studios](https://marketplace.visualstudio.com/publishers/NovaWrightStudios). © 2026 NovaWright Studios. All rights reserved.*
+*AccessiLint is in development, but will be published on the Visual Studio Marketplace by [NovaWright Studios](https://marketplace.visualstudio.com/publishers/NovaWrightStudios). © 2026 NovaWright Studios. All rights reserved.*
