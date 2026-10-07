@@ -6,7 +6,7 @@ date: 2026-09-11
 author: Stan
 categories: [Game Development]
 published: true
-featured: true
+featured: false
 excerpt: >
     Number Push is a free puzzle game built to showcase a procedural level-generation system that can create, solve, measure, and reproduce playable Sokoban-style puzzles. Explore how automated solving, difficulty profiles, and deterministic seeds can turn random generation into a system for creating continuously updated game content.
 ---
