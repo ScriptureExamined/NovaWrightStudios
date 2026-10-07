@@ -118,6 +118,6 @@
 - name: "Future of Gaming"
   slug: "future-of-gaming"
   description: "Where games, tools, technology, and player expectations may be heading."
-- name: "Software"
-  slug: "software"
+- name: "Applications"
+  slug: "applications"
   description: "Tools, engines, and software."
