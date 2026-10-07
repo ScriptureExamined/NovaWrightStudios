@@ -3,7 +3,7 @@ layout: post
 title: "NovaWright Firewall Monitor — Take Control of Windows Firewall"
 date: 2026-08-30
 author: Stan
-categories: [Portfolio]
+categories: [Applications, Portfolio]
 published: true
 featured: false
 excerpt: >
