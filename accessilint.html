@@ -1,0 +1,87 @@
+---
+layout: default
+title: AccessiLint
+---
+
+<section class="page-content">
+  <div class="container">
+    <h1>AccessiLint</h1>
+
+    <p>
+      Accessibility issues are easiest to fix when you catch them the moment they're
+      introduced — not during QA, not in a post-launch audit. AccessiLint is a Visual
+      Studio extension that brings WCAG 2.1 AA checking directly into your editor, so
+      violations surface as warnings right alongside your code.
+    </p>
+
+    <h2>What It Does</h2>
+
+    <p>
+      AccessiLint statically analyzes HTML, Razor, CSHTML, and CSS files as you work.
+      It covers all four WCAG POUR principles — Perceivable, Operable, Understandable,
+      and Robust — across 54 rules, each one traceable back to official W3C technique
+      documentation. Violations appear in the Error List with rule codes and plain-English
+      descriptions so you always know what to fix and why.
+    </p>
+
+    <h2>Who It's For</h2>
+
+    <p>
+      If you're building ASP.NET MVC apps, Razor Pages sites, or Blazor components in
+      Visual Studio 2022 or later, AccessiLint works with your existing workflow. No
+      extra tools, no separate audit step — just warnings that keep accessibility visible
+      at every stage of development.
+    </p>
+
+    <h2>What It Catches</h2>
+
+    <ul>
+      <li>Missing or empty <code>alt</code> attributes on images and image maps</li>
+      <li>Color contrast failures and text sizing that ignores user preferences</li>
+      <li>Mouse-only event handlers with no keyboard equivalent</li>
+      <li>Forms missing submit buttons or using auto-submitting <code>onchange</code> handlers</li>
+      <li>Invalid or incomplete ARIA usage and landmark structure</li>
+      <li>Data tables missing headers, captions, or proper associations</li>
+      <li>Inaccessible <code>&lt;iframe&gt;</code> elements, page titles, and more</li>
+    </ul>
+
+    <h2>Built to Last</h2>
+
+    <p>
+      AccessiLint is written in C# on .NET, using HtmlAgilityPack for HTML parsing and
+      a purpose-built CSS parser that handles inline styles, style blocks, and linked
+      stylesheets. Every rule is backed by xUnit tests — 484 passing at release — so you
+      can trust that what it flags is real.
+    </p>
+
+    <h2>Getting Started</h2>
+
+    <p>
+      AccessiLint 1.0 is available on the Visual Studio Marketplace from NovaWright Studios.
+    </p>
+
+    <ol>
+      <li>Open Visual Studio 2022 or later</li>
+      <li>Go to <strong>Extensions → Manage Extensions</strong></li>
+      <li>Search for <strong>AccessiLint</strong></li>
+      <li>Install and restart — analysis begins automatically</li>
+    </ol>
+
+    <h2>What's Coming</h2>
+
+    <p>
+      Version 1.0 covers the full WCAG 2.1 AA ruleset. Next on the roadmap is
+      <strong>AccessiLint Audit Reports</strong> — a Visual Studio command that scans
+      an entire solution and produces a professional accessibility report in Word format,
+      suitable for clients and compliance teams. This will be available as a separate
+      paid product. Expanded WCAG 2.2 coverage and additional file type support are
+      also planned.
+    </p>
+
+    <p>
+      <a href="{{ '/applications.html' | relative_url }}" class="btn">
+        Back to Applications
+      </a>
+    </p>
+  </div>
+</section>
