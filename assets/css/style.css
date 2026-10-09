@@ -152,6 +152,24 @@ a:hover {
     text-decoration: none;
 }
 
+.hero-cta-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.hero .cta-button-secondary {
+    background-color: transparent;
+    color: #00bfff;
+    border: 2px solid #00bfff;
+}
+
+.hero .cta-button-secondary:hover {
+    background-color: #00bfff;
+    color: #1e1e1e;
+    text-decoration: none;
+}
+
 /* ==========================================================================
    4. HOMEPAGE SECTIONS
    ========================================================================== */
