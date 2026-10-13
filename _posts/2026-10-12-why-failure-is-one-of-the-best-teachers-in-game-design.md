@@ -3,7 +3,7 @@ layout: post
 title: "Why Failure Is One of the Best Teachers in Game Design"
 date: 2026-10-13
 author: Stan
-categories: [Game Design]
+categories: [Design]
 published: true
 featured: false
 excerpt: >
