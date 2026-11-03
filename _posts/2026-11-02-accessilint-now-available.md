@@ -45,29 +45,30 @@ AccessiLint Pro is available in three tiers — all one-time payments, no subscr
 <table style="border-collapse:separate; border-spacing:0 4px;">
   <thead>
     <tr>
-      <th style="padding-right:24px;">Tier</th>
-      <th style="padding-right:24px;">Seats</th>
+      <th style="padding-right:30px;">Tier</th>
+      <th style="padding-right:30px;">Seats</th>
       <th>Price</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td style="padding-right:24px;">Solo</td>
-      <td style="padding-right:24px;">1 seat</td>
+      <td style="padding-right:30px;">Solo</td>
+      <td style="padding-right:30px;">1 seat</td>
       <td>$49</td>
     </tr>
     <tr>
-      <td style="padding-right:24px;">Team</td>
-      <td style="padding-right:24px;">5 seats</td>
+      <td style="padding-right:30px;">Team</td>
+      <td style="padding-right:30px;">5 seats</td>
       <td>$149</td>
     </tr>
     <tr>
-      <td style="padding-right:24px;">Studio</td>
-      <td style="padding-right:24px;">10 seats</td>
+      <td style="padding-right:30px;">Studio</td>
+      <td style="padding-right:30px;">10 seats</td>
       <td>$249</td>
     </tr>
   </tbody>
 </table>
+
 
 ➡️ [Get AccessiLint Pro on Gumroad](https://novawright2.gumroad.com/l/cffkrz)
 
