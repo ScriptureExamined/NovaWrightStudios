@@ -43,9 +43,11 @@ With one click, it scans your entire Visual Studio solution and produces:
 AccessiLint Pro is available in three tiers — all one-time payments, no subscription, no recurring fees:
 
 
-- Solo:	        1 seat	    $49
-- Team:	        5 seats	    $149
-- Studio:	    10 seats	$249
+| Tier   | Seats    | Price |
+|--------|----------|-------|
+| Solo   | 1 seat   | $49   |
+| Team   | 5 seats  | $149  |
+| Studio | 10 seats | $249  |
 
 ➡️ [Get AccessiLint Pro on Gumroad](https://novawright2.gumroad.com/l/cffkrz)
 
