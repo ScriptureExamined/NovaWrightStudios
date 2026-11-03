@@ -45,9 +45,9 @@ AccessiLint Pro is available in three tiers — all one-time payments, no subscr
 <table style="border-collapse:separate; border-spacing:0 4px;">
   <thead>
     <tr>
-      <th style="padding-right:30px;">[Tier]</th>
-      <th style="padding-right:30px;">[Seats]</th>
-      <th>[Price]</th>
+      <th style="padding-right:30px; color:#0000FF">Tier</th>
+      <th style="padding-right:30px; color:#0000FF">Seats</th>
+      <th style ="color:#0000FF">Price</th>
     </tr>
   </thead>
   <tbody>
