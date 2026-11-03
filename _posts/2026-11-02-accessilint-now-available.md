@@ -69,7 +69,7 @@ AccessiLint Pro is available in three tiers — all one-time payments, no subscr
   </tbody>
 </table>
 
-
+<br><br>
 ➡️ [Get AccessiLint Pro on Gumroad](https://novawright2.gumroad.com/l/cffkrz)
 
 ## Built for .NET Web Developers
