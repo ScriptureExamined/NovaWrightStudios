@@ -40,7 +40,12 @@ With one click, it scans your entire Visual Studio solution and produces:
 - A structured, accessible **HTML report** you can view in any browser
 - A polished **Word (.docx) document** ready to hand to clients, auditors, or compliance officers
 
-AccessiLint Pro is available for a **one-time payment of $49** — no subscription, no recurring fees.
+AccessiLint Pro is available in three tiers — all one-time payments, no subscription, no recurring fees:
+
+Tier	Seats	Price
+Solo	1 seat	$49
+Team	5 seats	$149
+Studio	10 seats	$249
 
 ➡️ [Get AccessiLint Pro on Gumroad](https://novawright2.gumroad.com/l/cffkrz)
 
