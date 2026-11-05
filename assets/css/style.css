@@ -981,10 +981,11 @@ a:hover {
     gap: 20px;
     justify-content: center;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .number-push-images img {
-    width: calc(75% - 10px);
+    flex: 1 1 300px;
     max-width: 500px;
     height: auto;
     object-fit: contain;
