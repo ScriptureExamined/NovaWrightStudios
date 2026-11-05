@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   initNavigation();
   initUnifiedContactForm();
+  initLightbox();
 });
 
 /* =========================
@@ -22,6 +23,41 @@ function initNavigation() {
     if (event.key === "Escape") {
       menu.classList.remove("open");
     }
+  });
+}
+
+/* =========================
+   Unified Contact Form
+========================= */
+
+/* =========================
+   Lightbox
+========================= */
+
+function initLightbox() {
+  // Create overlay elements once
+  const overlay = document.createElement("div");
+  overlay.id = "lightbox-overlay";
+  overlay.innerHTML = '<img id="lightbox-img" alt="">';
+  document.body.appendChild(overlay);
+
+  // Open on click for any .lightbox-trigger img or .number-push-images img
+  document.addEventListener("click", (e) => {
+    const img = e.target.closest(".number-push-images img, .lightbox-trigger img, img.lightbox");
+    if (!img) return;
+    document.getElementById("lightbox-img").src = img.src;
+    document.getElementById("lightbox-img").alt = img.alt;
+    overlay.classList.add("active");
+  });
+
+  // Close on clicking the overlay or the image
+  overlay.addEventListener("click", () => {
+    overlay.classList.remove("active");
+  });
+
+  // Close on Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") overlay.classList.remove("active");
   });
 }
 

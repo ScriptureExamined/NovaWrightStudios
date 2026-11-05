@@ -976,6 +976,7 @@ a:hover {
     gap: 10px;
 }
 
+/* Side-by-side screenshots (e.g. Number Push card) */
 .number-push-images {
     display: flex;
     gap: 20px;
@@ -989,6 +990,37 @@ a:hover {
     max-width: 500px;
     height: auto;
     object-fit: contain;
+    cursor: zoom-in;
+}
+
+/* ==========================================================================
+   LIGHTBOX
+   ========================================================================== */
+
+#lightbox-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.88);
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+}
+
+#lightbox-overlay.active {
+    display: flex;
+}
+
+#lightbox-img {
+    max-width: 92vw;
+    max-height: 88vh;
+    border-radius: 6px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7);
+    object-fit: contain;
+    cursor: default;
+}
+
 }
 
 /* Product hero placeholder (individual product pages) */
