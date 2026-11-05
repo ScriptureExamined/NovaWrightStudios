@@ -811,6 +811,234 @@ a:hover {
    15. RESPONSIVE
    ========================================================================== */
 
+/* ==========================================================================
+   16. BUTTONS (generic .btn used throughout product/app pages)
+   ========================================================================== */
+
+.btn {
+    display: inline-block;
+    padding: 10px 22px;
+    background-color: #00bfff;
+    color: #1e1e1e;
+    font-weight: bold;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.btn:hover {
+    background-color: #008080;
+    color: #1e1e1e;
+    text-decoration: none;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid #00bfff;
+    color: #00bfff;
+    padding: 8px 20px;
+}
+
+.btn-outline:hover {
+    background-color: #00bfff;
+    color: #1e1e1e;
+}
+
+.btn-muted {
+    background-color: #3a3a3a;
+    color: #aaa;
+}
+
+.btn-muted:hover {
+    background-color: #4a4a4a;
+    color: #e0e0e0;
+}
+
+/* ==========================================================================
+   17. PRODUCTS / STORE
+   ========================================================================== */
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+}
+
+.status-for-sale {
+    background-color: #00bfff;
+    color: #1e1e1e;
+}
+
+.status-in-development {
+    background-color: #3a3a3a;
+    color: #999;
+    border: 1px solid #555;
+}
+
+.status-coming-soon {
+    background-color: #3a3020;
+    color: #c8a060;
+    border: 1px solid #806030;
+}
+
+.status-available {
+    background-color: #1a3a1a;
+    color: #60c860;
+    border: 1px solid #306830;
+}
+
+/* Products grid (listing page) */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 28px;
+    margin-top: 32px;
+}
+
+.product-card {
+    background-color: #2a2a2a;
+    border-radius: 10px;
+    border: 1px solid #333;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.25s, transform 0.25s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.product-card:hover {
+    border-color: #00bfff;
+    transform: translateY(-3px);
+}
+
+.product-card-image {
+    width: 100%;
+    height: 180px;
+    background-color: #1a1a1a;
+    border-bottom: 1px solid #2e2e2e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3d3d3d;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    font-style: italic;
+}
+
+.product-card-body {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card-title {
+    margin: 0 0 8px;
+    font-size: 1.2rem;
+    color: #00bfff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.product-card-desc {
+    color: #cfcfcf;
+    line-height: 1.6;
+    flex: 1;
+    margin: 8px 0 20px;
+    font-size: 0.95rem;
+}
+
+.product-card-footer {
+    padding: 0 20px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+/* Product hero placeholder (individual product pages) */
+.product-hero-placeholder {
+    width: 100%;
+    max-width: 860px;
+    height: 360px;
+    background-color: #1a1a1a;
+    border: 2px dashed #333;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3d3d3d;
+    font-size: 1rem;
+    font-style: italic;
+    letter-spacing: 0.04em;
+    margin: 0 0 36px;
+}
+
+/* Product CTA block */
+.product-cta-block {
+    margin: 32px 0;
+    padding: 24px 28px;
+    background-color: #242424;
+    border-left: 4px solid #00bfff;
+    border-radius: 0 8px 8px 0;
+}
+
+.product-cta-block p {
+    margin: 0 0 16px;
+    color: #cfcfcf;
+    max-width: none;
+}
+
+.product-cta-block p:last-child {
+    margin-bottom: 0;
+}
+
+/* Product detail layout */
+.product-detail-title {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.product-platform-note {
+    font-size: 0.85rem;
+    color: #808080;
+    margin-bottom: 28px;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .product-hero-placeholder {
+        height: 200px;
+    }
+
+    .product-detail-title {
+        font-size: 1.6rem;
+    }
+}
+
+/* ==========================================================================
+   15. RESPONSIVE
+   ========================================================================== */
+
 @media (max-width: 768px) {
     .header-inner {
         flex-direction: column;
