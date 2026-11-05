@@ -984,8 +984,8 @@ a:hover {
 }
 
 .number-push-images img {
-    width: 100%;
-    max-width: 100px;
+    width: calc(50% - 10px);
+    max-width: 500px;
     height: auto;
     object-fit: contain;
 }
