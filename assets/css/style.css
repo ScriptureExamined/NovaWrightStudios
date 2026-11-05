@@ -941,6 +941,7 @@ a:hover {
     object-fit: cover;
     object-position: center;
     display: block;
+    cursor: zoom-in;
 }
 
 .product-card-body {
