@@ -976,6 +976,21 @@ a:hover {
     gap: 10px;
 }
 
+.number-push-images {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.number-push-images img {
+    width: 100%;
+    max-width: 500px;
+    max-height: 350px;
+    height: auto;
+    object-fit: contain;
+}
+
 /* Product hero placeholder (individual product pages) */
 .product-hero-placeholder {
     width: 100%;
