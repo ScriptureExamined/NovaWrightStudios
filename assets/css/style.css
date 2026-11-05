@@ -857,6 +857,14 @@ a:hover {
     color: #e0e0e0;
 }
 
+.btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    /* Blocks all mouse clicks and hovers */
+    text-decoration: none;
+}
+
 /* ==========================================================================
    17. PRODUCTS / STORE
    ========================================================================== */
