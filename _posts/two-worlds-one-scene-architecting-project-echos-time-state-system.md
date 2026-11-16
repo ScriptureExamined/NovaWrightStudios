@@ -3,7 +3,7 @@ layout: post
 title: "Two Worlds, One Scene: Architecting Project Echo's Time-State System"
 date: 2026-11-09
 author: Stan
-categories: [Technology, Game Development]
+categories: [Game Development]
 published: true
 excerpt: >
   Project Echo is built around a simple idea: the player can switch between Past and Present at any moment. But representing two complete states of the same world — with objects, geometry, and puzzle pieces in different positions across both turns out to be one of the more interesting architectural problems I've had to solve.
