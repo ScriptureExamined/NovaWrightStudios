@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Two Worlds, One Scene: Architecting Project Echo's Time-State System"
-date: 2026-11-09
+date: 2026-11-16
 author: Stan
 categories: [Game Development]
 published: true
