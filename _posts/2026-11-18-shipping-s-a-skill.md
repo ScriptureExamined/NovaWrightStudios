@@ -4,7 +4,7 @@ title: "Shipping Is a Skill"
 date: 2026-11-18
 author: Stan
 categories: [Industry]
-published: false
+published: true
 excerpt: >
   Finishing a game is not the natural endpoint of building one. It is a separate skill, with its own challenges and its own kind of discipline. Indie developers who learn to ship — not just build — end up in a very different place than those who don't.
 ---
