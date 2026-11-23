@@ -4,7 +4,7 @@ title: "Surviving the Middle"
 date: 2026-11-23
 author: Stan
 categories: [Game Development]
-featured: true
+featured: false
 published: true
 excerpt: >
   Every indie project has a beginning full of energy and an end pulled forward by momentum. The middle is where games go to die. Learning to navigate that stretch, the longest and least glamorous part of development, might be the most underrated skill in solo game development.
