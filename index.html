@@ -37,14 +37,14 @@ title: Home
 
     <p>
       What started as an experiment has become something we’re genuinely proud of.
-      Project Echo, our puzzle-adventure game built around the idea that time
-      doesn’t always move in one direction, is finished and heading into playtesting.
+      Project Echo — our puzzle-adventure game built around the idea that time
+      doesn’t always move in one direction — is finished and heading into playtesting.
     </p>
 
     <p>
-      In Echo, the world has slipped. Time folds back on itself, past actions
+      In Echo, the world has slipped. Time folds back on itself, your past actions
       replay in the environment around you, and the only way forward is to understand
-      what's already been done. It’s a game about consequences, observation, and the
+      what you’ve already done. It’s a game about consequences, observation, and the
       strange loops that form when cause and effect stop being so cooperative.
     </p>
 
@@ -54,7 +54,7 @@ title: Home
 
     <p>
       We’re in the final polish pass now and will be submitting for playtesting shortly.
-      Stay tuned. More details, screenshots, and ways to get involved are coming soon.
+      Stay tuned — more details, screenshots, and ways to get involved are coming soon.
     </p>
 
     <p>Stay curious.<br />– The Dev Team</p>
@@ -97,21 +97,20 @@ title: Home
   </div>
 </section>
 
+{% assign featured_posts = site.posts | where: "featured", true %}
+{% if featured_posts.size > 0 %}
 <section class="home-featured-post">
   <div class="container">
-    <h1>Featured Post</h1>
+    <h1>Featured Post{% if featured_posts.size > 1 %}s{% endif %}</h1>
 
-    {% assign featured_post = site.posts | where: "featured", true | first %} {%
-    if featured_post %}
+    {% for featured_post in featured_posts %}
     <article class="NewsSummary">
       <div class="NewsSummaryPostdate">
         {{ featured_post.date | date: "%b %-d, %Y" }}
       </div>
 
       <div class="NewsSummaryPostname">
-        <a href="{{ featured_post.url | relative_url }}"
-          >{{ featured_post.title }}</a
-        >
+        <a href="{{ featured_post.url | relative_url }}">{{ featured_post.title }}</a>
       </div>
 
       {% if featured_post.categories and featured_post.categories.size > 0 %}
@@ -121,7 +120,7 @@ title: Home
       <p>Posted by: {{ featured_post.author | default: site.author }}</p>
 
       <div class="NewsSummaryContent">
-        {% if featured_post.excerpt %} {{ featured_post.excerpt }} {% else %}
+        {% if featured_post.excerpt %}{{ featured_post.excerpt }}{% else %}
         <p>{{ featured_post.content | strip_html | truncatewords: 60 }}</p>
         {% endif %}
       </div>
@@ -130,6 +129,7 @@ title: Home
         <a href="{{ featured_post.url | relative_url }}">Read this post</a>
       </div>
     </article>
-    {% endif %}
+    {% endfor %}
   </div>
 </section>
+{% endif %}
