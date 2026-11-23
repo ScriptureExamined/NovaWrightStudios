@@ -4,7 +4,7 @@ title: "Introducing AccessiLint: WCAG 2.1 AA Accessibility Checking Right Inside
 date: 2026-10-06
 categories: [Applications, Portfolio]
 published: true
-featured: true
+featured: false
 tags: [wcag, accessibility, visual-studio, extension, a11y, html, razor, css]
 author: NovaWright Studios
 excerpt: "AccessiLint is a new Visual Studio extension that checks your HTML, Razor, CSHTML, and CSS files against WCAG 2.1 AA accessibility standards — giving you real-time feedback without ever leaving your editor."
