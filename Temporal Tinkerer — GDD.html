@@ -1,0 +1,1932 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Temporal Tinkerer — Main Game GDD</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+/* ── Layout: single-column doc with left-rail section nav ── */
+:root {
+  --bg:        #0f0e0c;
+  --bg2:       #17150f;
+  --bg3:       #1f1c14;
+  --surface:   #242016;
+  --border:    #332e22;
+  --fg:        #e8e0cc;
+  --fg2:       #a8997a;
+  --fg3:       #6b5f42;
+  --accent:    #c9a04e;
+  --accent2:   #8b6c2e;
+
+  /* era colors */
+  --era-now:    #5b8fa8;
+  --era-recent: #c9a04e;
+  --era-62:     #b87333;
+  --era-47:     #8b7355;
+  --era-tbd:    #7a5c8a;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Courier New', monospace;
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg:      #f5f0e8;
+    --bg2:     #ede7d9;
+    --bg3:     #e3dbca;
+    --surface: #d8cfba;
+    --border:  #c0b59a;
+    --fg:      #1a1710;
+    --fg2:     #4a3f28;
+    --fg3:     #7a6d50;
+    --accent:  #8b5e1a;
+    --accent2: #c9900a;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg:      #f5f0e8;
+  --bg2:     #ede7d9;
+  --bg3:     #e3dbca;
+  --surface: #d8cfba;
+  --border:  #c0b59a;
+  --fg:      #1a1710;
+  --fg2:     #4a3f28;
+  --fg3:     #7a6d50;
+  --accent:  #8b5e1a;
+  --accent2: #c9900a;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.7;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+
+/* ── Top bar ── */
+.topbar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 0 max(24px, env(safe-area-inset-left, 0px)) 0 max(24px, env(safe-area-inset-right, 0px));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 110;
+  background: var(--bg);
+}
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-style: italic;
+  color: var(--accent);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.topbar-badge {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--fg3);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--fg2);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 3px 10px;
+  flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Layout shell ── */
+.shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 0;
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Sidebar nav ── */
+.sidebar {
+  position: sticky;
+  top: 52px;
+  align-self: start;
+  height: calc(100vh - 52px);
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+  padding: 24px 16px 40px;
+}
+.nav-section {
+  margin-bottom: 20px;
+}
+.nav-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--fg3);
+  padding: 0 8px;
+  margin-bottom: 4px;
+}
+.nav-link {
+  display: block;
+  padding: 5px 8px;
+  border-radius: 4px;
+  color: var(--fg2);
+  text-decoration: none;
+  font-size: 13px;
+  line-height: 1.4;
+  transition: background .15s, color .15s;
+}
+.nav-link:hover { background: var(--bg3); color: var(--fg); }
+.nav-link.active { background: var(--surface); color: var(--accent); }
+.nav-sub {
+  padding-left: 14px;
+  font-size: 12px;
+}
+
+/* ── Main content ── */
+.content {
+  padding: 48px 48px 80px;
+  min-width: 0;
+}
+
+/* ── Sections ── */
+section { margin-bottom: 56px; scroll-margin-top: 72px; }
+
+h1 {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--fg);
+  line-height: 1.2;
+  text-wrap: balance;
+  margin-bottom: 8px;
+}
+.doc-meta {
+  font-size: 13px;
+  color: var(--fg3);
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--fg);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-wrap: balance;
+}
+h2::before {
+  content: "";
+  display: block;
+  width: 3px;
+  height: 22px;
+  background: var(--accent);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--accent);
+  margin: 28px 0 10px;
+}
+
+h4 {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--fg3);
+  margin: 20px 0 6px;
+}
+
+p { margin-bottom: 12px; color: var(--fg); }
+p + p { margin-top: 0; }
+
+ul, ol {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+li { margin-bottom: 4px; color: var(--fg); }
+
+strong { font-weight: 600; color: var(--fg); }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* ── Callout boxes ── */
+.callout {
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin: 16px 0;
+  font-size: 14px;
+}
+.callout-tbd {
+  background: color-mix(in srgb, var(--era-tbd) 10%, var(--bg2));
+  border-left: 3px solid var(--era-tbd);
+  color: var(--fg);
+}
+.callout-tbd strong { color: var(--era-tbd); }
+.callout-lock {
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg2));
+  border-left: 3px solid var(--accent);
+}
+.callout-lock strong { color: var(--accent); }
+.callout-note {
+  background: var(--bg3);
+  border-left: 3px solid var(--border);
+  color: var(--fg2);
+}
+.callout-note strong { color: var(--fg); }
+
+/* ── Era badges ── */
+.era-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  border-radius: 3px;
+  padding: 1px 7px;
+  vertical-align: middle;
+}
+.era-now    { background: color-mix(in srgb, var(--era-now) 20%, transparent);    color: var(--era-now);    border: 1px solid color-mix(in srgb, var(--era-now) 40%, transparent); }
+.era-recent { background: color-mix(in srgb, var(--era-recent) 20%, transparent); color: var(--era-recent); border: 1px solid color-mix(in srgb, var(--era-recent) 40%, transparent); }
+.era-62     { background: color-mix(in srgb, var(--era-62) 20%, transparent);     color: var(--era-62);     border: 1px solid color-mix(in srgb, var(--era-62) 40%, transparent); }
+.era-47     { background: color-mix(in srgb, var(--era-47) 20%, transparent);     color: var(--era-47);     border: 1px solid color-mix(in srgb, var(--era-47) 40%, transparent); }
+.era-tbd    { background: color-mix(in srgb, var(--era-tbd) 20%, transparent);    color: var(--era-tbd);    border: 1px solid color-mix(in srgb, var(--era-tbd) 40%, transparent); }
+
+/* ── Tables ── */
+.table-wrap { overflow-x: auto; margin: 16px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--fg3);
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 9px 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  vertical-align: top;
+  min-width: 0;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg2); }
+
+/* ── Code / prompts ── */
+.prompt-block {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--fg);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 12px 0;
+  position: relative;
+}
+.prompt-label {
+  position: absolute;
+  top: -1px; right: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top: none;
+  padding: 2px 8px;
+  border-radius: 0 0 4px 4px;
+}
+.copy-btn {
+  position: absolute;
+  top: 10px; right: 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--fg2);
+  cursor: pointer;
+  font-size: 11px;
+  font-family: var(--font-body);
+  padding: 3px 10px;
+}
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Location grid ── */
+.location-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin: 16px 0;
+}
+.location-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.location-card-num {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--fg3);
+  font-variant-numeric: tabular-nums;
+}
+.location-card-name {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 2px 0 6px;
+}
+.location-card-eras { display: flex; gap: 4px; flex-wrap: wrap; }
+
+/* ── Puzzle flow ── */
+.puzzle-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 12px 0;
+  position: relative;
+}
+.puzzle-steps::before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 30px;
+  bottom: 30px;
+  width: 1px;
+  background: var(--border);
+}
+.puzzle-step {
+  display: flex;
+  gap: 14px;
+  padding: 10px 0;
+}
+.step-num {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  position: relative;
+  z-index: 1;
+}
+.step-body { padding-top: 4px; min-width: 0; }
+.step-body strong { display: block; margin-bottom: 2px; }
+.step-body p { font-size: 13.5px; margin: 0; }
+
+/* ── Status table ── */
+.status-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.status-locked   { background: var(--accent); }
+.status-tbd      { background: var(--era-tbd); }
+.status-open     { background: var(--fg3); }
+
+
+/* ── Walkthrough status tags ── */
+.wt-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  border-radius: 3px;
+  padding: 1px 6px;
+  margin-left: 4px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.wt-built   { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); }
+.wt-partial { background: color-mix(in srgb, var(--era-62) 18%, transparent); color: var(--era-62); border: 1px solid color-mix(in srgb, var(--era-62) 40%, transparent); }
+.wt-planned { background: color-mix(in srgb, var(--era-tbd) 18%, transparent); color: var(--era-tbd); border: 1px solid color-mix(in srgb, var(--era-tbd) 40%, transparent); }
+.shot {
+  margin: 10px 0 4px;
+  padding: 14px 16px;
+  border: 1.5px dashed var(--border);
+  border-radius: 6px;
+  background: var(--bg2);
+  color: var(--fg2);
+  font-size: 13px;
+  line-height: 1.5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: baseline;
+}
+.shot-label { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.shot-file { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--fg3); }
+#walkthrough .step-body p { line-height: 1.6; }
+#walkthrough .step-body p strong { display: inline; margin: 0; }
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 16px; }
+  .content { padding: 24px 0 60px; }
+  h1 { font-size: 26px; }
+  h2 { font-size: 20px; }
+  .location-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+
+<div class="topbar">
+  <span class="topbar-title">Temporal Tinkerer — Main Campaign GDD</span>
+  <span class="topbar-badge">v0.1 Draft</span>
+  <button class="theme-toggle" onclick="toggleTheme()">◐</button>
+</div>
+
+<div class="shell">
+
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <a href="#premise" class="nav-link">Story Premise</a>
+      <a href="#hook" class="nav-link">Opening Hook</a>
+      <a href="#mystery" class="nav-link">The Mystery</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Time Travel</div>
+      <a href="#device" class="nav-link">The Device</a>
+      <a href="#eras" class="nav-link">Date Layers</a>
+      <a href="#traveldates" class="nav-link">Key Dates &amp; Travel</a>
+      <a href="#mechanics" class="nav-link">Core Loop</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">World</div>
+      <a href="#locations" class="nav-link">Locations</a>
+      <a href="#woods" class="nav-link">Woods System</a>
+      <a href="#town" class="nav-link">The Town</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Art Direction</div>
+      <a href="#style" class="nav-link">Style Guide</a>
+      <a href="#prompts" class="nav-link">Gemini Prompts</a>
+      <a href="#chatgpt-prompts" class="nav-link">ChatGPT Prompts</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Solution</div>
+      <a href="#walkthrough" class="nav-link">Walkthrough</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Production</div>
+      <a href="#tbd" class="nav-link">Design Decisions</a>
+      <a href="#scope" class="nav-link">Scope</a>
+    </div>
+  </nav>
+
+  <main class="content">
+
+    <h1>Temporal Tinkerer<br><em style="font-size:.6em;color:var(--fg2)">Main Campaign — Game Design Document</em></h1>
+    <div class="doc-meta">
+      <span>NovaWright Studios</span>
+      <span>Godot 4 .NET · C#</span>
+      <span>Point-and-click mystery</span>
+      <span>GDD started: 2026-11-09</span>
+      <span>Final edition: 2026-11-24</span>
+    </div>
+
+    <!-- ─── STORY PREMISE ─── -->
+    <section id="premise">
+      <h2>Story Premise</h2>
+      <p>The player receives a letter from their uncle — a tinkerer and amateur inventor — bubbling with excitement about a device he's finally gotten working. They drive out to his house. The front door is ajar. Inside: overturned furniture, drawers pulled out, papers everywhere. The uncle is gone.</p>
+      <p>The device is not in the house. Tobias left it in a trunk with Agnes Mae Whitaker in MillHaven, a separate town through the woods, and the key to the trunk arrives with his letter. Once the player has earned Agnes's trust and opened the trunk, the device takes them back two days, to the last day Tobias sat at his desk. The house is intact and the uncle is already gone, but everything he laid out for anyone who came looking is still there. The clues lead to 1947, when the Ashworth deed was recorded, and to June 1962, when the workshop burned. Tobias is stuck in 1962, and the player has to get him out.</p>
+
+      <div class="callout callout-tbd">
+        <strong>✓ Locked:</strong> The uncle's first name is <strong>Tobias</strong>. Appears in the opening letter, journal pages, and town records.
+      </div>
+    </section>
+
+    <!-- ─── OPENING HOOK ─── -->
+    <section id="hook">
+      <h2>Opening Hook &amp; Tutorial</h2>
+      <div class="callout callout-lock">
+        <strong>✓ Locked:</strong> The device is not hidden in the ransacked house. It is in a trunk Tobias left with Agnes Mae Whitaker in MillHaven, a separate town; the key to the trunk arrives in the opening letter. The house holds other clues and puzzles instead.
+      </div>
+
+      <h3>Arrival Sequence</h3>
+      <ol>
+        <li>A mail truck delivers the uncle's letter. The player takes it from the mailbox and reads it in the journal. It names Agnes Mae Whitaker in MillHaven and encloses the trunk key.</li>
+        <li>First scene: front of the house. The door stands open and something is wrong.</li>
+        <li>Explore the ransacked house: the stopped foyer clock (11:47), two photographs on the living-room mantel, and a trail note in the study that explains the forest signs.</li>
+        <li>Solve the forest signs (every third word, first letter) to find the route to MillHaven.</li>
+        <li>In MillHaven, earn Agnes's trust with the letter and the key, open her attic trunk, and take the time device and Tobias's second letter, which explains the device and gives the date Nov 7, 2026.</li>
+      </ol>
+
+      <h3>Tutorial: 48 Hours Ago</h3>
+      <p>The player travels to Nov 7, 2026. The house is intact and warm, and the uncle is already gone. His workspace is laid out exactly as he left it. No pressure, no time limit. This space teaches:</p>
+      <ul>
+        <li>How to use the device and the Known Dates list</li>
+        <li>How to navigate rooms and examine objects (the desk calendar, the corkboard, the wall safe)</li>
+        <li>How the journal records every clue and date</li>
+        <li>How to return home (the device's Home date, Nov 9, 2026)</li>
+      </ul>
+      <p>The calendar (March 15, 1947) and the corkboard note give the safe combination, 31547. In the safe are a photograph of the deed and the workshop key. The player gets the rules of the game through the uncle's own handwriting, not through a tutorial screen.</p>
+
+      <div class="callout callout-lock">
+        <strong>✓ Locked:</strong> The first journey is deliberate: the player travels to Nov 7, 2026 with the device from the trunk. The past tutorial space is 48 hours ago, house intact, uncle absent.
+      </div>
+    </section>
+
+    <!-- ─── THE MYSTERY ─── -->
+    <section id="mystery">
+      <h2>The Mystery</h2>
+      <h3>The Core Conflict</h3>
+      <p>The uncle discovered that the county's record of the Ashworth deed was falsified. In 1947 Rutherford Ashworth deeded the land to the family and the deed was recorded at County Records. In 1962 Cornelius Montclair, who wanted the estate for himself, had the county's page replaced with a forgery notarized by his bride, Constance Vance. The original deed vanished from the vault. The uncle went back to prove it, and he never came home.</p>
+
+      <div class="callout callout-tbd">
+        <strong>✓ Locked:</strong> Antagonist family name: <strong>Montclair</strong>. The Montclair name appears on the town hall facade, library wing, and a commercial building on main street. In 1947, those same buildings bear the original owner's name — a visible before/after the player witnesses across eras.
+      </div>
+
+      <h3>Key Historical Event</h3>
+      <p>Cornelius Montclair married Constance Vance on <strong>Saturday, June 9, 1962</strong>, and had her sign papers &ldquo;for the house&rdquo; the week before. On the night of <strong>Thursday, June 14, 1962</strong>, the Estate workshop at Ashworth Hollow burned, and Tobias was carried off to the cellar of the Ashworth house. His device was damaged, so he was stuck in June 1962. The player finds him on the morning of <strong>June 15</strong>, with the original deed taken from the 1947 County Records vault as proof.</p>
+
+      <h3>Three Threads</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Thread</th><th>What the player is doing</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><strong>Find the uncle</strong></td><td>He is stuck in June 1962. The logbook in his workshop and Agnes's reading of it give the date: June 15, 1962.</td></tr>
+            <tr><td>2</td><td><strong>Recover the evidence</strong></td><td>The original deed exists in 1947; in 2026 the county's copy is a forgery. The player takes the original from vault box nine on March 21, 1947.</td></tr>
+            <tr><td>3</td><td><strong>Expose the cover-up</strong></td><td>Eleanor, Constance and old Amos each hold a piece. The original deed convinces Constance, who frees Tobias and calls Sheriff Dunn.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-note">
+        <strong>Design note:</strong> Knowledge is the gate. Items travel with the player (keys, photographs, the deed, the wooden wren), but none of them opens a door the player has not first worked out: dates, combinations, who to trust and what to show them.
+      </div>
+    </section>
+
+    <!-- ─── THE DEVICE ─── -->
+    <section id="device">
+      <h2>The Time Travel Device</h2>
+      <h3>Fiction &amp; Form</h3>
+      <p>The device is a wearable brass instrument — the size of a large watch — that the uncle spent years building. Its face, when summoned as a UI popup, reveals a small mechanical instrument panel: three input windows (Month, Day, Year), a Known Dates log, and a Travel lever. It is powered by mechanisms the uncle never fully explained, only documented.</p>
+
+      <h3>UI Layout</h3>
+      <div class="prompt-block" style="font-size:13px">┌──────────────────────────────────────┐
+│   TEMPORAL ECHO DEVICE               │
+│                                      │
+│  ┌──────────┐   ┌──────────┐         │
+│  │  ▲  ▲   │   │  ▲  ▲   │         │
+│  │  MARCH  │   │   14    │         │
+│  │  ▼  ▼   │   │  ▼  ▼   │         │
+│  └──────────┘   └──────────┘         │
+│     MONTH            DAY             │
+│                                      │
+│  ┌──────────────────────┐            │
+│  │  _ _ _ _            │  YEAR      │
+│  └──────────────────────┘            │
+│  [ 1 ][ 2 ][ 3 ]  [ 4 ][ 5 ][ 6 ]  │
+│  [ 7 ][ 8 ][ 9 ]  [ ← ][ 0 ][ ✓ ]  │
+│                                      │
+│  ══ KNOWN DATES ▼ ══════════════════ │
+│  › Nov 07, 2026 — 48 hours ago      │
+│  (more dates unlock as found)        │
+│  ═════════════════════════════════   │
+│           [  TRAVEL  ]               │
+└──────────────────────────────────────┘</div>
+
+      <h3>Key Design Rules</h3>
+      <ul>
+        <li><strong>Any date works (revised):</strong> The device never rejects a date. A key date takes the player to that era; any other date takes them to an empty "elsewhere" screen (see Key Dates &amp; Travel). The player still has to discover the key dates, so knowledge remains the gate.</li>
+        <li><strong>Known Dates log:</strong> Every discovered date is listed in the drawer. Selecting one auto-fills the dials. This is the power-user path; first-time players enjoy dialing manually.</li>
+        <li><strong>Items travel with you (revised):</strong> What you carry stays in the bag when you change era. The journal records everything significant. Items are used on people from the bag: choose <em>Look in my bag</em> in a conversation, pick the item, then click the person.</li>
+        <li><strong>Talking in the past (revised):</strong> People in the past talk to the player (Eleanor, Amos, Constance, Tobias and others), and some only talk once the player has earned their trust. Conversations alternate their line, the player's line, their line. <em>Look in my bag</em> appears only while the person is expecting something; if you are holding what they are waiting for, it is the only choice besides Leave.</li>
+      </ul>
+
+      <h3>Visual Design for Art Prompts</h3>
+      <p>When the device appears in room art (uncle's study/workshop in the past), it should be described as: <em>a brass wristwatch-sized instrument with a hinged face panel, three small scrolling windows showing dials, a grid of nine inlaid enamel buttons on the lower half, and a small brass lever on the right side. Art Deco influence. Intricate mechanical detail. No glowing elements.</em></p>
+
+      <div class="callout callout-lock">
+        <strong>✓ Locked:</strong> The device is found in Agnes's attic trunk, not hidden in the house. Its face and dials are shown on the Time Device Face prompt below.
+      </div>
+    </section>
+
+    <!-- ─── DATE LAYERS ─── -->
+    <section id="eras">
+      <h2>Date Layers</h2>
+      <p>Four temporal layers. The range is tight enough that the property plausibly exists across all eras. Visual contrast between layers carries storytelling weight automatically.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Label</th><th>Date</th><th>Palette</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="era-badge era-now">Present</span></td>
+              <td>Nov 9, 2026</td>
+              <td>Cool overcast, blue-gray shadows, desaturated</td>
+              <td>Starting state. Ransacked house. Active investigation.</td>
+            </tr>
+            <tr>
+              <td><span class="era-badge era-recent">48 Hours Ago</span></td>
+              <td>Nov 7, 2026</td>
+              <td>Warm golden afternoon, dust in air, everything intact</td>
+              <td>Tutorial. Uncle's research readable. House undisturbed.</td>
+            </tr>
+            <tr>
+              <td><span class="era-badge era-62">1962</span></td>
+              <td>June 1962</td>
+              <td>Golden hour amber, mid-century details saturated</td>
+              <td>The arson. Town documents. Original deed exists.</td>
+            </tr>
+            <tr>
+              <td><span class="era-badge era-47">1947</span></td>
+              <td>Spring 1947</td>
+              <td>Sepia-warm, soft morning light, cream and ochre</td>
+              <td>When the original deed was drawn up. Earlier town, earlier owner.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Not every location needs all four layers. The house interior needs Present + 48hrs. The workshop may need all four. Town locations need 1962 + 1947 at minimum.</p>
+    </section>
+
+    <!-- ─── KEY DATES & TRAVEL ─── -->
+    <section id="traveldates">
+      <h2>Key Dates &amp; Travel</h2>
+      <div class="callout callout-lock">
+        <strong>✓ Locked (revision):</strong> Whatever date the player enters, the device takes them somewhere. Key dates go to the real location in that era. Every other date goes to a screen with no hotspots and a Back function.
+      </div>
+
+      <h3>How a Date Is Resolved</h3>
+      <ol>
+        <li><strong>Key-date table first.</strong> If the entered date falls inside a key date's window, travel to that era's real scene.</li>
+        <li><strong>Era bucket second.</strong> Otherwise use the year-range bucket and show its "elsewhere" image with no hotspots.</li>
+        <li><strong>Back / Previous.</strong> From an elsewhere screen the player returns to the last real location they left. The device button still works there for a second jump.</li>
+      </ol>
+
+      <h3>Fuzzy Windows</h3>
+      <p>The player does not have to hit the exact day. If the month and year are right, a window of about a week (default ±3 days) works the same. Some entries are flagged <strong>exact</strong> where the story needs it.</p>
+      <ul>
+        <li>A window must never cross a change of state. The workshop fire window ends on June 14, because June 15 shows the burned workshop.</li>
+        <li>The date the player typed is stored (see below). The scene shown is the key date's scene.</li>
+      </ul>
+
+      <h3>Key Dates (Final)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Era</th><th>Where / why</th><th>Window</th></tr></thead>
+          <tbody>
+            <tr><td>Nov 9, 2026</td><td><span class="era-badge era-now">2026</span></td><td>Home: the ransacked present</td><td>Exact</td></tr>
+            <tr><td>Nov 7, 2026</td><td><span class="era-badge era-recent">48hr</span></td><td>House intact, Tobias gone</td><td>Exact</td></tr>
+            <tr><td>June 14, 1962</td><td><span class="era-badge era-62">1962</span></td><td>Before the fire: the workshop whole, the cottage lived in; the stone is dug up from June 13</td><td>June 8&ndash;14</td></tr>
+            <tr><td>June 15, 1962</td><td><span class="era-badge era-62">1962</span></td><td>The morning after the fire: the ruin, old Amos, and the rescue. Always arrives at the Hollow</td><td>Exact</td></tr>
+            <tr><td>March 15, 1947</td><td><span class="era-badge era-47">1947</span></td><td>Deed era; Rutherford Ashworth</td><td>&plusmn;3 days</td></tr>
+            <tr><td>March 21, 1947</td><td><span class="era-badge era-47">1947</span></td><td>The deed recorded at County Records (Mr. Pruitt, vault box nine)</td><td>Exact</td></tr>
+            <tr><td>April 3, 1947</td><td><span class="era-badge era-47">1947</span></td><td>The boundary stone photographed; young Amos at the cottage</td><td>&plusmn;3 days</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>One date is a secret and is never listed: <strong>June 9, 1962</strong>, the Montclair and Vance wedding, seen from the back of the church. The wedding report in the library basement says only &ldquo;Saturday the ninth&rdquo;, so a player who works it out can type it in.</p>
+
+      <h3>Elsewhere Screens (Era Buckets)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date range</th><th>Image</th></tr></thead>
+          <tbody>
+            <tr><td>Before the town existed</td><td>Wilderness. MillHaven&rsquo;s sign says est. 1887, which is the cutoff year.</td></tr>
+            <tr><td>Before 1947</td><td>One image</td></tr>
+            <tr><td>1948–1961</td><td>One image</td></tr>
+            <tr><td>1963–1999</td><td>One image</td></tr>
+            <tr><td>2000–2025</td><td>One image</td></tr>
+            <tr><td>2027 onward</td><td>One image</td></tr>
+            <tr><td>Non-key dates inside 1947, 1962 and 2026</td><td>The neighbouring era&rsquo;s picture (1947: before 1947; 1962: 1948&ndash;1961; 2026: 2000&ndash;2025)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout callout-note">
+        <strong>Rule:</strong> A town cannot simply disappear. Once the town exists, a non-key date shows the original town image for that era with no hotspots, not a generic screen. Only dates before the town existed show wilderness.
+      </div>
+
+      <h3>The Date as a Variable</h3>
+      <ul>
+        <li>The date the player entered is stored as a variable (for example <code>TravelManager.EnteredDate</code>) and is available to any script.</li>
+        <li>An NPC asked for the date says back the date the player entered, in an era-appropriate form.</li>
+        <li>An NPC can answer "what's the date?" by handing the player a new date, which goes into Known Dates and can start the next trip.</li>
+        <li>NPC lines should depend on the era's state (before or after an event), not the exact day, so a window never lets someone mention something that has not happened yet.</li>
+      </ul>
+
+      <div class="callout callout-lock">
+        <strong>✓ Locked:</strong> Windows, exact-date flags and the era pictures for non-key dates are final, as listed above. Changing the day inside the same era reloads the scene, so each day shows its own pictures (June 12 and June 13 look different at the Hollow).
+      </div>
+    </section>
+
+    <!-- ─── CORE LOOP ─── -->
+    <section id="mechanics">
+      <h2>Core Loop</h2>
+      <p>Every puzzle in the game is built from one repeating structure:</p>
+      <div class="puzzle-steps">
+        <div class="puzzle-step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Discovery</strong>
+            <p>Find a clue in the present (newspaper, gravestone, letter, journal) that reveals a specific date.</p>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Preparation</strong>
+            <p>Understand what you're looking for before you travel. The clue tells you what existed at that place, before it was destroyed or removed.</p>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Exploration</strong>
+            <p>Arrive in the past. The room looks different — objects present, intact, legible. Find the thing you couldn't reach in the present.</p>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>Application</strong>
+            <p>Return to the present. Use what you learned. Sometimes a past clue raises a new question — chaining loops is the mid-game escalation.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>What Crosses Time</h3>
+      <ul>
+        <li><strong>Knowledge always</strong> — journal auto-records everything significant. The player carries full memory.</li>
+        <li><strong>Items never</strong> — no physical objects cross eras. No inventory paradoxes. No key from 1962 opens a 2026 lock directly.</li>
+        <li><strong>Exceptions (late-game twist only)</strong> — one or two story-significant moments where the rule bends, deliberate and narrative-justified.</li>
+      </ul>
+    </section>
+
+    <!-- ─── LOCATIONS ─── -->
+    <section id="locations">
+      <h2>Location Inventory</h2>
+      <p>Approximately 34 distinct scenes. Woods traversal uses 12 images procedurally (6 straight + 6 fork) — the interactive puzzle locations are ~22.</p>
+
+      <h4>Property — Exterior</h4>
+      <div class="location-grid">
+        <div class="location-card">
+          <div class="location-card-num">01</div>
+          <div class="location-card-name">Front of House</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-recent">48hr</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">02</div>
+          <div class="location-card-name">Porch / Front Door</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-recent">48hr</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">03</div>
+          <div class="location-card-name">Rear Meadow</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+          </div>
+        </div>
+      </div>
+
+      <h4>House — Interior</h4>
+      <div class="location-grid">
+        <div class="location-card">
+          <div class="location-card-num">04</div>
+          <div class="location-card-name">Foyer / Entry Hall</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-recent">48hr</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">05</div>
+          <div class="location-card-name">Living Room</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-recent">48hr</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">06</div>
+          <div class="location-card-name">Kitchen</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-recent">48hr</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">07</div>
+          <div class="location-card-name">Uncle's Study</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-recent">48hr</span>
+            <span class="era-badge era-62">1962</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">08</div>
+          <div class="location-card-name">Upstairs Hallway</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-recent">48hr</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">09</div>
+          <div class="location-card-name">Uncle's Bedroom</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-recent">48hr</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">10</div>
+          <div class="location-card-name">Attic</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-recent">48hr</span>
+            <span class="era-badge era-62">1962</span>
+          </div>
+        </div>
+      </div>
+
+      <h4>Left Path — Garage / Guest Cottage</h4>
+      <div class="location-grid">
+        <div class="location-card">
+          <div class="location-card-num">11</div>
+          <div class="location-card-name">Garage Exterior</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-62">1962</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">12</div>
+          <div class="location-card-name">Garage Interior</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-62">1962</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">13</div>
+          <div class="location-card-name">Guest Cottage Ext.</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-62">1962</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">14</div>
+          <div class="location-card-name">Guest Cottage Int.</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-62">1962</span>
+          </div>
+        </div>
+      </div>
+
+      <h4>Right Path — Woods Traversal (Procedural)</h4>
+      <div class="location-grid">
+        <div class="location-card">
+          <div class="location-card-num">15</div>
+          <div class="location-card-name">Meadow / Woods Entrance</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">16–21</div>
+          <div class="location-card-name">Straight Path Variants ×6</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">22–27</div>
+          <div class="location-card-name">Fork Variants ×6</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+          </div>
+        </div>
+      </div>
+
+      <h4>Workshop</h4>
+      <div class="location-grid">
+        <div class="location-card">
+          <div class="location-card-num">28</div>
+          <div class="location-card-name">Workshop Exterior</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-62">1962</span>
+            <span class="era-badge era-47">1947</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">29</div>
+          <div class="location-card-name">Workshop Interior</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-62">1962</span>
+            <span class="era-badge era-47">1947</span>
+          </div>
+        </div>
+      </div>
+
+      <h4>Town</h4>
+      <div class="location-grid">
+        <div class="location-card">
+          <div class="location-card-num">30</div>
+          <div class="location-card-name">Town Entrance / Main St.</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-62">1962</span>
+            <span class="era-badge era-47">1947</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">31</div>
+          <div class="location-card-name">General Store / Post Office</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-62">1962</span>
+            <span class="era-badge era-47">1947</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">32</div>
+          <div class="location-card-name">Town Hall</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-62">1962</span>
+            <span class="era-badge era-47">1947</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">33</div>
+          <div class="location-card-name">Diner / Inn</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-62">1962</span>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-num">34</div>
+          <div class="location-card-name">Church / Cemetery</div>
+          <div class="location-card-eras">
+            <span class="era-badge era-now">2026</span>
+            <span class="era-badge era-62">1962</span>
+            <span class="era-badge era-47">1947</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-note">
+        <strong>Image count estimate:</strong> ~34 key scenes, with ~22 requiring era variants. Total images before wander-mode optimization: approximately 55–60. Woods wander mode uses a Godot color modulation shader on existing straight/fork images rather than separate art — saves ~12 quota slots.
+      </div>
+    </section>
+
+    <!-- ─── WOODS SYSTEM ─── -->
+    <section id="woods">
+      <h2>Woods Navigation System</h2>
+      <h3>Structure</h3>
+      <p>The woods are genuinely navigable only once the player finds the uncle's hand-drawn map — located in the past (48 hours ago) pinned to the study wall. In the present, it's gone. Reading the map in the past auto-records it to the journal. Without the journal entry, every path loops.</p>
+
+      <h3>Hidden Sequence Logic</h3>
+      <p>The game tracks the player's fork choices silently — never displayed, never counted. After each fork, it checks:</p>
+      <ul>
+        <li><strong>Workshop path match</strong> (L R L R L R L L R) → Workshop Exterior scene</li>
+        <li><strong>Town path match</strong> (R L R L R L R R L) → Town Entrance scene</li>
+        <li><strong>Still viable</strong> (can still match either path) → Continue normally</li>
+        <li><strong>Diverged from both</strong> → Enter wander mode</li>
+      </ul>
+
+      <h3>Wander Mode</h3>
+      <p>When the sequence is broken, the player doesn't snap back immediately. They continue through 3–6 more procedural straight/fork scenes before the path naturally loops back to the meadow entrance. Wander length is randomly varied each time — it's uncountable. The sequence resets silently on meadow re-entry.</p>
+
+      <h3>Atmosphere as Soft Signal</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>State</th><th>Visual treatment</th><th>Implementation</th></tr></thead>
+          <tbody>
+            <tr><td>Correct path</td><td>Canopy thins, birdsong clearer, light slightly warmer</td><td>Godot: lighter color modulation, birdsong audio layer louder</td></tr>
+            <tr><td>Wander mode</td><td>Denser canopy, cooler palette, same birdsong quieter</td><td>Godot: slight blue-shift modulation, reduced audio</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>This isn't a puzzle clue — it's atmosphere. Players feel the difference in hindsight after finding the map, not before.</p>
+
+      <h3>Woods Map Puzzle (Core Mechanic Showcase)</h3>
+      <p>The map puzzle is a perfect showcase of the core loop: the navigation information the player needs exists only in the past. Finding it in the past converts the woods from obstacle to scenery in one satisfying moment. First-time players who rush the woods get the Zelda II experience; explorers who check the study first get a path that works.</p>
+    </section>
+
+    <!-- ─── TOWN ─── -->
+    <section id="town">
+      <h2>The Town</h2>
+      <p>The town is <strong>MillHaven</strong> (sign: EST. 1887), a completely separate town from Ashworth Hollow. The Montclair name appears on its town hall facade, a library wing, and a commercial building on main street. These architectural details must be visible in the town exterior art.</p>
+
+      <div class="callout callout-lock">
+        <strong>✓ Locked — Ashworth Hollow naming:</strong> The Hollow began as a settlement supporting the estate's workers, so its buildings are named for what they were used for, not for a family: Estate Workshop, Caretaker's Cottage, Estate Icehouse, Hollow Mill, and the Notice Board. The Montclair name appears only on MillHaven's civic and commercial buildings, never on the Hollow's. The Hollow keeps its working names while Montclair puts its name on the town.
+      </div>
+
+      <h3>Key Town Scenes</h3>
+      <p>The town hub has six buildings, each reached by a click on the hub picture.</p>
+      <ul>
+        <li><strong>Agnes's house:</strong> Agnes Mae Whitaker keeps Tobias's trunk in the attic. In 2026 she is the gate to the story and every reveal comes through her: trust, the first half of the story, the whole story, the logbook and, last, the date June 15, 1962.</li>
+        <li><strong>Historical Society:</strong> Reginald Ames. The 2026 archive has the 1962 volume with June cut out. In 1962 the same building is the library wing, with the Gazette archive in its basement: the volumes 1950&ndash;1961, the crate with the 1962 volume, and the June 11 report of the Montclair wedding.</li>
+        <li><strong>The empty storefront:</strong> Walter Pritchard's father did the library renovations in June 1962. His ledger on the stool dates the night the bound Gazettes were moved: June 12.</li>
+        <li><strong>County Records:</strong> Marjorie Hale (2026) and Mr. Pruitt (1947). Deed Book 14 holds the forged page; the original deed is in vault box nine on March 21, 1947.</li>
+        <li><strong>The church:</strong> The Reverend and the 1962 marriage register: Constance Vance, aged 21, and Agnes as a witness.</li>
+        <li><strong>The Harwick Diner:</strong> Dolores (2026) names Eleanor Reid. In 1962 Eleanor, the young night waitress, is the witness: she saw Cornelius's Cadillac come off the Hollow road with its headlights off on June 14. She talks only once the player earns her trust.</li>
+      </ul>
+
+      <div class="callout callout-lock">
+        <strong>✓ Locked:</strong> Tobias's fate. He is held in the cellar of the Ashworth house after the fire and is stuck in June 1962 because the device was damaged. The player frees him on June 15, 1962 and brings him home to Nov 9, 2026.
+      </div>
+    </section>
+
+    <!-- ─── ART DIRECTION ─── -->
+    <section id="style">
+      <h2>Art Direction</h2>
+      <h3>Style</h3>
+      <p>Photorealistic 3D render quality. Matches the bonus game's visual language — not illustrated, not painted. Sharp material detail, strong three-layer depth (foreground / midground / background), single dominant warm light source per scene, rich naturalistic color. No people, no text, no UI intrusion.</p>
+
+      <h3>Master Style Prefix Block</h3>
+      <p>This prefix is prepended to <em>every</em> Gemini prompt in the game:</p>
+      <div class="prompt-block">
+        <span class="prompt-label">STYLE PREFIX</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Photorealistic 3D rendered scene. High-detail game background art for a point-and-click adventure game. 1920×1080 widescreen. Slightly elevated eye-level perspective, centered symmetrical composition, strong foreground-midground-background depth layering. Single dominant warm light source, naturalistic shadows. Rich material detail throughout: wood grain, stone texture, aged metal, fabric all sharply rendered. Atmospheric depth haze in background. No people, no text, no UI elements. Cinematic quality, sharp focus across the full scene.</div>
+
+      <h3>Era-Specific Palette Additions</h3>
+      <p>Append one of these after the master prefix, based on which era is being depicted:</p>
+
+      <h4><span class="era-badge era-now">Present — 2026</span></h4>
+      <div class="prompt-block">Cool overcast daylight. Slightly desaturated, blue-gray ambient shadows. Overcast sky visible through windows. Surfaces dusty, weathered, slightly neglected. Cold blue-white light.</div>
+
+      <h4><span class="era-badge era-recent">48 Hours Ago — Nov 7, 2026</span></h4>
+      <div class="prompt-block">Warm afternoon golden light. Slight dust in the air. Everything intact and lived-in. Amber light streaming from windows. Personal objects in their normal places, signs of recent habitation.</div>
+
+      <h4><span class="era-badge era-62">1962</span></h4>
+      <div class="prompt-block">Warm golden hour light. Amber tones throughout. Mid-century furniture and fixtures, crisp and saturated. Warm incandescent lighting indoors. Everything polished, well-maintained, era-appropriate details visible.</div>
+
+      <h4><span class="era-badge era-47">1947</span></h4>
+      <div class="prompt-block">Soft sepia-warm daylight. Slightly lower contrast. Gentle morning light. Cream and ochre tones. Simpler furnishings, slightly older fixtures. A quiet, settled atmosphere — the town and property at an earlier, calmer moment.</div>
+    </section>
+
+    <!-- ─── GEMINI PROMPTS ─── -->
+    <section id="prompts">
+      <h2>Gemini Prompts — Woods Pictures</h2>
+      <p>These prompts reference no story elements (no names, no family names, no building signage), so they work for any era or scene.</p>
+
+      <h3>Woods — Straight Path Variants (×6)</h3>
+      <p>Generate 6 separate images using these prompts. Each uses the master prefix + present-era palette.</p>
+
+      <div class="prompt-block">
+        <span class="prompt-label">WOODS-S-01</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Photorealistic 3D rendered scene. High-detail game background art for a point-and-click adventure game. 1920×1080 widescreen. Slightly elevated eye-level perspective, centered symmetrical composition, strong foreground-midground-background depth layering. Single dominant warm light source, naturalistic shadows. Rich material detail throughout: wood grain, stone texture, aged metal, fabric all sharply rendered. Atmospheric depth haze in background. No people, no text, no UI elements. Cinematic quality, sharp focus across the full scene.
+
+A straight dirt path through a dense deciduous forest. Tall oak and maple trees form a canopy overhead with dappled overcast light filtering through. Ferns and undergrowth crowd both sides of the path. The path continues straight into misty background trees. Cool blue-gray overcast light. Autumn leaves beginning to fall. Rocky outcroppings visible at left.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">WOODS-S-02</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Photorealistic 3D rendered scene. High-detail game background art for a point-and-click adventure game. 1920×1080 widescreen. Slightly elevated eye-level perspective, centered symmetrical composition, strong foreground-midground-background depth layering. Single dominant warm light source, naturalistic shadows. Rich material detail throughout: wood grain, stone texture, aged metal, fabric all sharply rendered. Atmospheric depth haze in background. No people, no text, no UI elements. Cinematic quality, sharp focus across the full scene.
+
+A straight wooded path through a birch grove. White-barked birch trees line both sides, their pale trunks receding into background haze. The path is covered in dead leaves. A small stream is visible through the trees on the right side. Overcast cool light, slight ground mist. Moss-covered fallen log across the left foreground.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">WOODS-S-03</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Photorealistic 3D rendered scene. High-detail game background art for a point-and-click adventure game. 1920×1080 widescreen. Slightly elevated eye-level perspective, centered symmetrical composition, strong foreground-midground-background depth layering. Single dominant warm light source, naturalistic shadows. Rich material detail throughout: wood grain, stone texture, aged metal, fabric all sharply rendered. Atmospheric depth haze in background. No people, no text, no UI elements. Cinematic quality, sharp focus across the full scene.
+
+A forest path passing through an open rocky section. The trees thin briefly here, revealing a gray overcast sky above. Large lichen-covered boulders flank the path. Wild blackberry brambles grow between the rocks. The path narrows slightly and continues into denser forest ahead. Blue-gray overcast light, no shadows.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">WOODS-S-04</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Photorealistic 3D rendered scene. High-detail game background art for a point-and-click adventure game. 1920×1080 widescreen. Slightly elevated eye-level perspective, centered symmetrical composition, strong foreground-midground-background depth layering. Single dominant warm light source, naturalistic shadows. Rich material detail throughout: wood grain, stone texture, aged metal, fabric all sharply rendered. Atmospheric depth haze in background. No people, no text, no UI elements. Cinematic quality, sharp focus across the full scene.
+
+A straight path through mature pine forest. The floor is carpeted in pine needles, almost no undergrowth. Pine trunks recede symmetrically into background haze. The canopy is dense, creating a cathedral-like enclosed space. Dim filtered overcast light, greenish-gray tone. A single large pine cone in the foreground center.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">WOODS-S-05</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Photorealistic 3D rendered scene. High-detail game background art for a point-and-click adventure game. 1920×1080 widescreen. Slightly elevated eye-level perspective, centered symmetrical composition, strong foreground-midground-background depth layering. Single dominant warm light source, naturalistic shadows. Rich material detail throughout: wood grain, stone texture, aged metal, fabric all sharply rendered. Atmospheric depth haze in background. No people, no text, no UI elements. Cinematic quality, sharp focus across the full scene.
+
+A forest path crossing a small wooden plank bridge over a narrow creek. The creek flows left to right with smooth dark water. Willow branches hang over the water. The path continues straight past the bridge into mixed woodland. Overcast gray light reflecting on the water. Wet stones visible in the creek bed. Autumn leaves floating on the surface.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">WOODS-S-06</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Photorealistic 3D rendered scene. High-detail game background art for a point-and-click adventure game. 1920×1080 widescreen. Slightly elevated eye-level perspective, centered symmetrical composition, strong foreground-midground-background depth layering. Single dominant warm light source, naturalistic shadows. Rich material detail throughout: wood grain, stone texture, aged metal, fabric all sharply rendered. Atmospheric depth haze in background. No people, no text, no UI elements. Cinematic quality, sharp focus across the full scene.
+
+A straight dirt path through forest emerging from a low-lying foggy hollow. Ground-level mist clings to the path. Gnarled old oak trees with exposed roots, some draped in hanging moss. The path rises slightly toward clearer ground ahead. Heavily overcast, cool blue-gray light, low contrast. A rusted iron fence post is visible at the right edge, half-consumed by moss and ivy.</div>
+
+      <h3>Woods — Fork Path Variants (×6)</h3>
+      <p>Each fork scene shows the path splitting into left and right branches. Left and right exits must be clearly distinct and clickable.</p>
+
+      <div class="prompt-block">
+        <span class="prompt-label">WOODS-F-01</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Photorealistic 3D rendered scene. High-detail game background art for a point-and-click adventure game. 1920×1080 widescreen. Slightly elevated eye-level perspective, centered symmetrical composition, strong foreground-midground-background depth layering. Single dominant warm light source, naturalistic shadows. Rich material detail throughout: wood grain, stone texture, aged metal, fabric all sharply rendered. Atmospheric depth haze in background. No people, no text, no UI elements. Cinematic quality, sharp focus across the full scene.
+
+A forest path forking into two distinct directions. A large old oak tree stands at the split, its roots visible. The left path curves into birch forest and disappears into haze. The right path descends slightly through dense fern undergrowth. No signage. Overcast cool light. Fallen leaves on the ground. Both paths are equally visible and plausible.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">WOODS-F-02</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Photorealistic 3D rendered scene. High-detail game background art for a point-and-click adventure game. 1920×1080 widescreen. Slightly elevated eye-level perspective, centered symmetrical composition, strong foreground-midground-background depth layering. Single dominant warm light source, naturalistic shadows. Rich material detail throughout: wood grain, stone texture, aged metal, fabric all sharply rendered. Atmospheric depth haze in background. No people, no text, no UI elements. Cinematic quality, sharp focus across the full scene.
+
+A Y-shaped fork in a woodland path. A mossy boulder sits at the split. The left branch goes uphill through pine trees, narrower and darker. The right branch follows a wider, flatter route through mixed deciduous forest. Gray overcast light, autumn coloring. Mushrooms growing at the base of the boulder. Both exits clearly framed by tree trunks.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">WOODS-F-03</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Photorealistic 3D rendered scene. High-detail game background art for a point-and-click adventure game. 1920×1080 widescreen. Slightly elevated eye-level perspective, centered symmetrical composition, strong foreground-midground-background depth layering. Single dominant warm light source, naturalistic shadows. Rich material detail throughout: wood grain, stone texture, aged metal, fabric all sharply rendered. Atmospheric depth haze in background. No people, no text, no UI elements. Cinematic quality, sharp focus across the full scene.
+
+A path fork in forest near a small clearing. The left path enters the clearing briefly before curving back into trees. The right path stays in deep shade under a dense canopy. The fork point has an old wooden post, weathered and leaning, its sign long since rotted away. Overcast light. A crow sits on the post, facing away. Ground mist in the left clearing area.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">WOODS-F-04</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Photorealistic 3D rendered scene. High-detail game background art for a point-and-click adventure game. 1920×1080 widescreen. Slightly elevated eye-level perspective, centered symmetrical composition, strong foreground-midground-background depth layering. Single dominant warm light source, naturalistic shadows. Rich material detail throughout: wood grain, stone texture, aged metal, fabric all sharply rendered. Atmospheric depth haze in background. No people, no text, no UI elements. Cinematic quality, sharp focus across the full scene.
+
+A forest path splitting at a low stone wall that runs left and right into the forest. The wall is old, overgrown with ivy, waist height. A gap in the center and openings at both ends. The left path follows the wall into shadow. The right path curves away from it into open woodland. Overcast gray light. Moss-covered stones. The wall suggests old property boundary.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">WOODS-F-05</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Photorealistic 3D rendered scene. High-detail game background art for a point-and-click adventure game. 1920×1080 widescreen. Slightly elevated eye-level perspective, centered symmetrical composition, strong foreground-midground-background depth layering. Single dominant warm light source, naturalistic shadows. Rich material detail throughout: wood grain, stone texture, aged metal, fabric all sharply rendered. Atmospheric depth haze in background. No people, no text, no UI elements. Cinematic quality, sharp focus across the full scene.
+
+A path fork where a dry stream bed crosses the trail. The fork is defined by the stream: the left path crosses the stream and continues through alder trees. The right path follows alongside the stream into the distance. Overcast light. Smooth river stones in the empty stream bed. Roots of riverside trees exposed by erosion. Both directions clearly passable.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">WOODS-F-06</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Photorealistic 3D rendered scene. High-detail game background art for a point-and-click adventure game. 1920×1080 widescreen. Slightly elevated eye-level perspective, centered symmetrical composition, strong foreground-midground-background depth layering. Single dominant warm light source, naturalistic shadows. Rich material detail throughout: wood grain, stone texture, aged metal, fabric all sharply rendered. Atmospheric depth haze in background. No people, no text, no UI elements. Cinematic quality, sharp focus across the full scene.
+
+A trail fork in forest near a collapsed old fence line. The fence posts lean at angles, wire long since rusted away. The left path passes through the gap in the fence into denser, older-growth trees. The right path skirts the fence and continues through younger regrowth with more light. Cool overcast. A rusted metal bucket hangs from one fence post. Brambles at the forest edge.</div>
+    </section>
+
+    <!-- ─── CHATGPT PROMPTS ─── -->
+    <section id="chatgpt-prompts">
+      <h2>ChatGPT Prompts — Time Travel &amp; Agnes</h2>
+      <p>Images are made in ChatGPT with reference images attached. Where a prompt says "attached image", attach the picture named in the note above it.</p>
+
+      <h3>Elsewhere Pictures (6)</h3>
+      <p>Save as <strong>Images/Elsewhere/ELSEWHERE-{name}.jpg</strong>. Same spot through time: one road, one oak, one ridge. Generate PRE-1947 first (attach an existing exterior as style reference), then attach it to each of the others.</p>
+
+      <div class="prompt-block">
+        <span class="prompt-label">ELSEWHERE-PRE-1947</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Create a photorealistic 3D-rendered game background, 1920x1080 widescreen, in the same visual style as my attached reference image (rich material detail, strong foreground/midground/background depth, a single dominant light source, atmospheric haze). No people, no text, no readable signs.
+
+Scene: a quiet country road at the edge of a small town, as it looked between about 1890 and 1946. A packed pale dirt wagon road with two wheel ruts and grass between them curves gently from the lower left into the middle distance and bends out of sight around a low wooded rise. One large old oak stands at the right side of the road in the middle ground. On the left, a long meadow slopes up to a distant tree line and a low blue-green ridge, and a weathered split-rail fence runs along the left edge of the road. A leaning wooden telegraph pole with two glass insulators stands near the oak. An empty old hay wagon with spoked wooden wheels is parked on the grass verge. Open sky fills the upper third.
+
+Lighting: soft sepia-warm morning daylight, slightly lower contrast, cream and ochre tones, quiet and settled.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">ELSEWHERE-WILDERNESS</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Using the attached image as the exact base, keep the identical camera angle, composition, oak tree, meadow, tree line, ridge and sky. Change only the era to before any settlement existed: remove the road, fence, telegraph pole and hay wagon completely. The ground is untouched tall meadow grass with only a faint deer trail where the road was. The oak is the same tree, a little younger. Soft pale mist in the meadow, early gentle light. No people, no text, no man-made objects.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">ELSEWHERE-1948-1961</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Using the attached image as the exact base, keep the identical camera angle, composition, road curve, oak, meadow, tree line, ridge and sky. Change only the era to the 1950s: the road is neat gravel. Replace the telegraph pole with tall wooden utility poles with crossarms and several wires. Replace the split-rail fence with a barbed-wire fence on wooden posts. Park an empty turquoise-and-cream 1950s pickup on the verge, and add a small hand-painted wooden mailbox on a post. Warm golden-hour light, saturated mid-century colors, everything well kept. No people, no text, no readable signs.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">ELSEWHERE-1963-1999</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Using the attached image as the exact base, keep the identical camera angle, composition, road curve, oak, meadow, tree line, ridge and sky. Change only the era to the late twentieth century: the road is paved asphalt, slightly cracked, with a faded double yellow center line and gravel shoulder. A wooden utility pole with a transformer stands near the oak. Add a metal rural mailbox on a post, a plain green metal sign post with no sign text, and a faded barn roof far away on the left. Hazy afternoon light, slightly muted film-like colors. No people, no text, no readable signs.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">ELSEWHERE-2000-2025</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Using the attached image as the exact base, keep the identical camera angle, composition, road curve, oak, meadow, tree line, ridge and sky. Change only the era to the present day: smooth dark asphalt with crisp white edge lines and a yellow center line, reflective roadside delineator posts, a short section of green metal guardrail at the bend, and the silhouette of a cell tower on the distant ridge. Clear cool daylight, high clarity, slightly desaturated. No people, no text, no readable signs.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">ELSEWHERE-2027-ON</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Using the attached image as the exact base, keep the identical camera angle, composition, road curve, oak, meadow, tree line, ridge and sky. Change only the era to a few years in the future, restrained and realistic, not sci-fi: slender white wind turbines on the distant ridge, a field of low solar panels in the left meadow, a sleek unobtrusive roadside charging post, and freshly laid road markings. Clean bright daylight. No flying vehicles, no people, no text, no readable signs.</div>
+
+      <h3>Time Device Face</h3>
+      <p>Save as <strong>Images/UI/DEVICE-FACE.png</strong> (transparent). The game draws all text, dials, keys and buttons on top; the art supplies only the brass body and empty dark recessed areas. Send the result back so the interface can be fitted to it.</p>
+
+      <div class="prompt-block">
+        <span class="prompt-label">DEVICE-FACE</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Create a flat, straight-on front view of the face of a handheld time-travel instrument, designed as a game interface panel, on a transparent background, 3:2 landscape. A rounded-rectangle body of aged brass with Art Deco engraving, small rivets, fine mechanical detail and subtle wear. Photorealistic 3D render style. No glowing elements, no text, no numbers, no letters anywhere.
+
+Layout, as proportions of the full panel: a narrow blank engraved title plate across the top. Upper left, two recessed dark rectangular windows with brass bezels side by side, one wide and one narrower. Upper right, one wide, short recessed dark window with a brass bezel. Right middle, a large plain recessed dark rectangular bay with no buttons inside. Lower left, a tall recessed dark rectangular panel. Bottom center, a wide brass plate with a slot, like a lever housing. A small round brass boss in the top right corner. All recessed dark areas must be flat, empty and near-black so interface elements can sit on them.</div>
+
+      <h3>Agnes's Trunk</h3>
+      <p>Save as <strong>Images/Agnes/E26/TRUNK-01-E26.jpg</strong>, <strong>TRUNK-01-OPEN-E26.jpg</strong>, <strong>TRUNK-01-EMPTY-E26.jpg</strong>. Generate the closed one first (attach a style reference and the trunk key icon), then derive the other two from it.</p>
+
+      <div class="prompt-block">
+        <span class="prompt-label">TRUNK-01 (CLOSED)</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Create a photorealistic 3D-rendered game background, 1920x1080 widescreen, in the same visual style as my first attached image. No people, no text.
+
+Scene: the attic of an older woman's house, lived-in and tidy. An old leather-and-wood steamer trunk sits closed at the center on wide wooden floorboards, with brass corner caps, worn leather straps, and a brass lock plate with an ornate keyhole centered on the front, sized for the small brass key in my second attached image. Warm afternoon light from a small attic window at the left, dust motes in the air, a folded quilt on an old chair in the background, boxes and a dress form in soft focus behind. Strong depth, a single warm light source.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">TRUNK-01-OPEN</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Using the attached image as the exact base, keep the identical camera, attic, light and objects. Change only the trunk: the lid is open, raised back. The inside is lined with faded green velvet. In the center, in a shaped hollow in the velvet, rests a wristwatch-sized brass time instrument: a hinged face panel, three small windows with dials, a grid of nine small enamel buttons on the lower half, and a small brass lever on the right side, Art Deco style, no glowing parts. Beside it lies a folded cream letter tucked into the velvet. No people, no text.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">TRUNK-01-EMPTY</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Using the attached image as the exact base, keep everything identical. Change only the inside of the trunk: remove the time instrument and the folded letter, so the green velvet lining is empty, with a faint pressed outline where the instrument rested. No people, no text.</div>
+
+      <h3>Items</h3>
+      <p><strong>Images/Items/ICON-TIME-DEVICE.png</strong> (transparent) and <strong>Images/Items/LETTER-INSTRUCTIONS.jpg</strong> (blank paper; the game writes the text on it in the handwriting font).</p>
+
+      <div class="prompt-block">
+        <span class="prompt-label">ICON-TIME-DEVICE</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>Create a single object icon on a transparent background, centered, square 1024x1024, in the same style as my attached item icons: a brass wristwatch-sized time instrument seen at a slight three-quarter angle, hinged face panel closed, three small dial windows visible on the face, a grid of nine small enamel buttons on the lower half, a small brass lever on the right side. Art Deco style, intricate mechanical detail, subtle wear, no glowing parts, no text, no numbers.</div>
+
+      <div class="prompt-block">
+        <span class="prompt-label">LETTER-INSTRUCTIONS</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>A single sheet of aged cream writing paper seen from directly above, portrait orientation, filling the frame, slightly worn edges, faint fold lines, a few tiny age spots, completely blank with no writing, no lines, no text, and nothing on it. Photorealistic, soft even light, no shadows beyond a subtle edge.</div>
+
+      <div class="callout callout-note">
+        <strong>Still undecided:</strong> pictures for Agnes's house itself (porch, front room) depend on the MillHaven map.
+      </div>
+    </section>
+
+    <!-- ─── OPEN QUESTIONS ─── -->
+    <!-- ─── WALKTHROUGH ─── -->
+    <section id="walkthrough">
+      <h2>Walkthrough</h2>
+      <p>The solution to the game in order, written so it can be lifted straight onto the website. It matches the finished game, from the letter in the mailbox to the last page of Tobias&rsquo;s logbook. Spoilers throughout.</p>
+
+      <div class="callout callout-note">
+        <strong>How to play it:</strong> Click anything that looks interesting. The <em>Back</em> button at the bottom left (next to the journal) leaves a view, and <em>Turn around</em> appears where you can look the other way. When someone is waiting to see something you are carrying, choose <em>Look in my bag</em> in the conversation, pick the item and click the person. The era badge shows when each step takes place. Dashed boxes mark where a screenshot should go, with its file name. Dates you learn go into the journal and the device's Known Dates list.
+      </div>
+
+<p><strong>Sections:</strong> <a href="#wt-part-1">Part 1: The Letter</a> &middot; <a href="#wt-part-2">Part 2: The Ransacked House</a> &middot; <a href="#wt-part-3">Part 3: The Forest Signs</a> &middot; <a href="#wt-part-4">Part 4: MillHaven: The Time Device</a> &middot; <a href="#wt-part-5">Part 5: Two Days Ago</a> &middot; <a href="#wt-part-6">Part 6: Ashworth Hollow: The Fire Date</a> &middot; <a href="#wt-part-7">Part 7: MillHaven: The Missing Gazette</a> &middot; <a href="#wt-part-8">Part 8: 1962: Eleanor and the Fire</a> &middot; <a href="#wt-part-9">Part 9: 1962: Ashworth Hollow Before the Fire</a> &middot; <a href="#wt-part-10">Part 10: 1947: The Estate at Its Best</a> &middot; <a href="#wt-part-11">Part 11: The Finale: June 15, 1962</a></p>
+
+      <h3 id="wt-part-1">Part 1: The Letter</h3>
+      <p>Where the game begins, at the player's own house.</p>
+      <div class="puzzle-steps">
+        <div class="puzzle-step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Take the letter from the mailbox <span class="era-badge era-now">2026</span></strong>
+            <p>A mail truck delivers Tobias's letter and drives off. Click the mailbox, click its door to open it, then click the letter. It fades into the journal and the <strong>trunk key</strong> goes into your bag. Read the letter in the journal (it names Agnes Mae Whitaker in MillHaven), close the journal, then click <em>Head up to the house</em>.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The open mailbox with the letter inside, just before clicking it<span class="shot-file">assets/images/temporal-tinkerer/01a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Get into Tobias's house <span class="era-badge era-now">2026</span></strong>
+            <p>At the front, click the house. In 2026 the door is standing open (the house has been ransacked), so click it to walk straight into the foyer. The locked door and the welcome-mat key only exist on <strong>Nov 7, 2026</strong> (and in 1947), when the house is shut: click the door (locked), click the <strong>welcome mat</strong> and peel it up, take the key, select it in your bag and use it on the door. The door then stays unlocked in every era.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The welcome mat peeled back to show the key<span class="shot-file">assets/images/temporal-tinkerer/02a.jpg</span></div>
+          </div>
+        </div>
+      </div>
+      <h3 id="wt-part-2">Part 2: The Ransacked House</h3>
+      <p>Tobias is missing and the house has been searched. Everything here is 2026, the starting era.</p>
+      <div class="puzzle-steps">
+        <div class="puzzle-step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Look at the foyer clock <span class="era-badge era-now">2026</span></strong>
+            <p>The grandfather clock in the foyer has stopped at <strong>11:47</strong>. It is a quiet hint at the year 1947.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The foyer clock stopped at 11:47<span class="shot-file">assets/images/temporal-tinkerer/03a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>Take the two photographs from the living room <span class="era-badge era-now">2026</span></strong>
+            <p>Go through the door on the left of the hallway. Click each photo on the mantel; closing the close-up puts it in your bag. One shows <strong>Eleanor and Tobias at the Harwick Fair</strong> (1958), the other <strong>Tobias with you</strong>. You need both later.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The living room mantel with both framed photos<span class="shot-file">assets/images/temporal-tinkerer/04a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <strong>Find the trail note in the study <span class="era-badge era-now">2026</span></strong>
+            <p>The study is at the far end of the hallway. Turn with the left and right arrows to the view behind the desk (facing the door) and open the top-right drawer. Read the note and close it; it goes into the journal: <em>&ldquo;R.A. never wasted breath. The signs are mostly wind, meant to tire out trespassers. Only the third counts, and only its first. Count in threes.&rdquo;</em> The wall safe is open and empty, the desk calendar is too damaged to read and the corkboard clues cannot be examined. All of these matter two days earlier.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The open top-right drawer, view behind the desk<span class="shot-file">assets/images/temporal-tinkerer/05a.jpg</span></div>
+            <div class="shot"><span class="shot-label">Screenshot</span> The trail note on its paper<span class="shot-file">assets/images/temporal-tinkerer/05b.jpg</span></div>
+          </div>
+        </div>
+      </div>
+      <h3 id="wt-part-3">Part 3: The Forest Signs</h3>
+      <p>Two paths leave the side yard. Each is a short maze of forks, and each sign hides its own route.</p>
+      <div class="puzzle-steps">
+        <div class="puzzle-step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <strong>Read both signs <span class="era-badge era-now">2026</span></strong>
+            <p>At the forest entrance click each sign. The note says to take every third word and use only its first letter. <strong>Left sign</strong> (Ashworth Hollow, est. 1893): long, roads, lead, right, long, roads, lead, left, right gives <strong>L R L R L R L L R</strong>. <strong>Right sign</strong> (MillHaven, est. 1887): rough, lanes, run, low, rough, left, rise, rarely, level gives <strong>R L R L R L R R L</strong>.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The left sign (Ashworth Hollow) popup<span class="shot-file">assets/images/temporal-tinkerer/06a.jpg</span></div>
+            <div class="shot"><span class="shot-label">Screenshot</span> The right sign (MillHaven) popup<span class="shot-file">assets/images/temporal-tinkerer/06b.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <strong>Walk the forest <span class="era-badge era-now">2026</span></strong>
+            <p>Forest scenes alternate between a straight stretch (click forward) and a fork (click left or right). Take the route from the sign at each fork. A wrong turn sends you wandering through extra scenes until the woods bring you back. Once a path is solved it becomes fast travel, and you skip the maze from then on. Do the right-hand path first: the letter sends you to Agnes in MillHaven.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> A fork in the woods with the left and right arrows showing<span class="shot-file">assets/images/temporal-tinkerer/07a.jpg</span></div>
+          </div>
+        </div>
+      </div>
+      <h3 id="wt-part-4">Part 4: MillHaven: The Time Device</h3>
+      <p>Agnes Mae Whitaker is keeping something of Tobias's. She wants proof that you are who you say you are.</p>
+      <div class="puzzle-steps">
+        <div class="puzzle-step">
+          <div class="step-num">8</div>
+          <div class="step-body">
+            <strong>Walk into town <span class="era-badge era-now">2026</span></strong>
+            <p>Click the distant town, then the town ahead and the street ahead (the cursor changes to a walking arrow), through the three approach pictures. The fourth picture is the town hub. Its six buildings are Agnes's house, the Historical Society, the empty storefront, County Records, the diner and the church.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The town hub with the six buildings<span class="shot-file">assets/images/temporal-tinkerer/08a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">9</div>
+          <div class="step-body">
+            <strong>Earn Agnes's trust <span class="era-badge era-now">2026</span></strong>
+            <p>Click Agnes&rsquo;s house to reach her closed door, then click the door to knock. Agnes appears at the door and speaks. Talk to her and choose &ldquo;My Uncle Tobias told me to come see you.&rdquo; She asks for proof. Close the conversation with <em>Look in my bag</em>, select Tobias&rsquo;s letter and click her; she recognises his handwriting and asks for the key. Select the trunk key and click her again. She believes you. Click Leave and the porch is empty with the door standing open: click the doorway to go in (her front room, the stairs to the attic). If you leave before she trusts you, she shuts the door and you must knock again.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> Agnes's conversation with the letter and key options<span class="shot-file">assets/images/temporal-tinkerer/09a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">10</div>
+          <div class="step-body">
+            <strong>Open the trunk in the attic <span class="era-badge era-now">2026</span></strong>
+            <p>Ask about what Tobias left; she tells you it is in the attic trunk. Go in, take the stairs up, then select the trunk key and use it on the lock. Take the <strong>brass time device</strong> and the sealed <strong>letter from Tobias</strong>. The letter goes into the journal and explains the device: turn the month and day with the arrows, type the year, press Travel. The Known Dates list fills in the dials for you. Close enough counts for most dates (within about a week), but Nov 7, 2026 must be exact.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The open trunk with the device and the letter<span class="shot-file">assets/images/temporal-tinkerer/10a.jpg</span></div>
+          </div>
+        </div>
+      </div>
+      <h3 id="wt-part-5">Part 5: Two Days Ago</h3>
+      <p>The house on Nov 7, 2026, before it was ransacked. Everything the searchers destroyed is still here.</p>
+      <div class="puzzle-steps">
+        <div class="puzzle-step">
+          <div class="step-num">11</div>
+          <div class="step-body">
+            <strong>Learn the date Nov 7, 2026 <span class="era-badge era-now">2026</span></strong>
+            <p>Reading Tobias's letter from the trunk (page two) says: <em>&ldquo;I'll be at my desk until the seventh of November, with everything laid out for anyone who comes looking.&rdquo;</em> Reading it adds <strong>Nov 7, 2026</strong> to the device's Known Dates as &ldquo;The last day Tobias was at his desk&rdquo;. The letter never says to dial it: the player works out that this is a date to travel to.</p>
+
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">12</div>
+          <div class="step-body">
+            <strong>Travel to Nov 7, 2026 <span class="era-badge era-recent">48hr</span></strong>
+            <p>At the house, open the device, enter <strong>Nov 7, 2026</strong> (this date must be exact) and press Travel. The house is intact and warm, and Tobias is already gone.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The time device with Nov 7, 2026 entered<span class="shot-file">assets/images/temporal-tinkerer/12a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">13</div>
+          <div class="step-body">
+            <strong>Read the desk calendar <span class="era-badge era-recent">48hr</span></strong>
+            <p>In the study, click the desk surface. In the close-up, click the calendar: <strong>March 15 is circled, and the year showing is 1947</strong>. It goes into the journal with that date, so March 15, 1947 joins the device's Known Dates.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The calendar close-up with March 15 circled<span class="shot-file">assets/images/temporal-tinkerer/13a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">14</div>
+          <div class="step-body">
+            <strong>Read the corkboard <span class="era-badge era-recent">48hr</span></strong>
+            <p>Click the corkboard, then click each clue: a note reading <em>&ldquo;R.A. - confirm before the 15th&rdquo;</em> and Tobias's timeline (1939 estate in family, 1942 new plans, <strong>1947</strong> circled, 1956 transfer records, 1962 house vacant). Both go into the journal.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The corkboard close-up with the R.A. note and the timeline<span class="shot-file">assets/images/temporal-tinkerer/14a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">15</div>
+          <div class="step-body">
+            <strong>Open the safe <span class="era-badge era-recent">48hr</span></strong>
+            <p>Turn to the wall with the painting and click the painting to swing it open. The wall safe has a keypad. Type <strong>31547</strong> (3-15-47, from the calendar and the note), then click the handle. Take the <strong>deed photograph</strong> and the <strong>workshop key</strong>. Items you carry stay with you when you travel.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The keypad with 31547 entered<span class="shot-file">assets/images/temporal-tinkerer/15a.jpg</span></div>
+            <div class="shot"><span class="shot-label">Screenshot</span> The open safe with the deed photo and workshop key<span class="shot-file">assets/images/temporal-tinkerer/15b.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">16</div>
+          <div class="step-body">
+            <strong>Return home <span class="era-badge era-now">2026</span></strong>
+            <p>Open the device, choose <em>Home, today</em> (Nov 9, 2026) and travel back. Agnes asks for the deed photograph once you have found out who C. Vance is (see &ldquo;Show Agnes the deed photograph&rdquo; in Part 7).</p>
+
+          </div>
+        </div>
+      </div>
+      <h3 id="wt-part-6">Part 6: Ashworth Hollow: The Fire Date</h3>
+      <p>The left-hand forest path comes out at the end of a single street. Walk up it in three stops, and click a building to turn to it. Back returns to the street.</p>
+      <div class="puzzle-steps">
+        <div class="puzzle-step">
+          <div class="step-num">17</div>
+          <div class="step-body">
+            <strong>Walk up the street and read the Gazette <span class="era-badge era-now">2026</span></strong>
+            <p>Solve the left-hand path (the signs above). At the first stop turn <strong>left</strong> to the burned workshop. Click the <strong>newspaper box</strong> on its post at the left of the picture. The box opens in a close-up. Click the stack of papers to read the front page of the <strong>Millhaven Gazette, Friday, June 15, 1962</strong>: <em>Workshop at Ashworth Hollow destroyed by fire</em>. It goes into the journal and adds <strong>June 14, 1962</strong> (the night of the fire) to the Known Dates. This is the only place the fire date comes from. It does <strong>not</strong> give June 15; that comes later from Agnes.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The burned workshop with the newspaper box at the left<span class="shot-file">assets/images/temporal-tinkerer/17a.jpg</span></div>
+            <div class="shot"><span class="shot-label">Screenshot</span> The Gazette front page, full screen<span class="shot-file">assets/images/temporal-tinkerer/17b.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">18</div>
+          <div class="step-body">
+            <strong>Look around the Hollow <span class="era-badge era-now">2026</span></strong>
+            <p>At the first stop the notice board holds only the ghost of faded writing. Past the cottage and icehouse, the far end has a covered bridge and a round bare patch of earth where something heavy once stood. It reads vague at first; once you know the 1947 boundary stone or the June 13 digging, clicking it says more. The cottage is empty and the icehouse is sealed.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The bare patch of earth at the far end of the street<span class="shot-file">assets/images/temporal-tinkerer/18a.jpg</span></div>
+          </div>
+        </div>
+      </div>
+            <h3 id="wt-part-7">Part 7: MillHaven: The Missing Gazette</h3>
+      <p>June 1962 is missing from the town&rsquo;s newspaper archive, and the deed&rsquo;s date looks wrong. Thread A (the Gazette) must be followed all the way to the 1962 library basement: it holds the clue that makes Eleanor talk in Part 8. Thread B (the deed) leads to the original deed.</p>
+      <div class="puzzle-steps">
+        <div class="puzzle-step">
+          <div class="step-num">19</div>
+          <div class="step-body">
+            <strong>Thread A: Historical Society <span class="era-badge era-now">2026</span></strong>
+            <p>Talk to Reginald (ask about the Society, then the archive). He alternates lines with you like every other character: his line, yours, his reply. In the reading room go through to the archive shelves and click the <strong>1962 volume</strong>: the pages run from May straight to July, with a stub where June was cut out. Ask Reginald about it: he says Walter Pritchard&rsquo;s father did the renovations that summer, and Walter is in the old storefront on Main Street.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The 1962 volume with June cut out<span class="shot-file">assets/images/temporal-tinkerer/19a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">20</div>
+          <div class="step-body">
+            <strong>Thread A: Walter Pritchard and the ledger <span class="era-badge era-now">2026</span></strong>
+            <p>In the empty storefront, talk to Walter and ask about himself, then about his father&rsquo;s renovation work. Walter will not give you a date. In the back room, click the <strong>open ledger on the stool</strong>. It opens in his father&rsquo;s handwriting: <em>&ldquo;June 12. Library wing, basement. Moved the bound newspapers down overnight, no questions. Paid double.&rdquo;</em> Reading it adds <strong>June 12, 1962</strong> to the Known Dates, and a journal entry, <strong>The bound Gazettes, June 12, 1962</strong>, records that his father moved the bound Gazette volumes into the library wing basement that night and was paid double to keep quiet. Where to look next is up to you.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The 1962 ledger entry<span class="shot-file">assets/images/temporal-tinkerer/20a.jpg</span></div>
+            <div class="shot"><span class="shot-label">Screenshot</span> The journal entry &ldquo;The bound Gazettes, June 12, 1962&rdquo;<span class="shot-file">assets/images/temporal-tinkerer/20b.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">21</div>
+          <div class="step-body">
+            <strong>Thread A: The library basement, 1962 <span class="era-badge era-62">1962</span></strong>
+            <p>Go to the Historical Society, open the device and enter June 12, 1962 (any date from June 8 to 14 works). The building is the library wing, still smelling of fresh varnish. Go through the door marked GAZETTE ARCHIVE and down the stairs. Along the wall, the Gazette volumes stand on the shelf in order, 1950 to 1961, and after 1961 the shelf is bare: the 1962 volume is missing. Click the <strong>crate</strong> at the back to find it, then click the page with the rectangle cut out of it: the journal entry <strong>The Gazette volume, June 1962</strong> records the cut. Then read the last page before it, June 11, on the left. Down the left column a report says that Miss Constance Vance and Mr. Cornelius Montclair were <strong>married on Saturday the ninth</strong> at the First Church, and that Cornelius has been &ldquo;a familiar face at the Harwick Diner all week&rdquo;, arranging the household at the Ashworth house. It goes into the journal as <strong>The wedding report</strong>. No date is added to the Known Dates. Eleanor needs this in Part 8.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The basement: the Gazette volumes 1950 to 1961, the bare shelf and the crate<span class="shot-file">assets/images/temporal-tinkerer/21a.jpg</span></div>
+            <div class="shot"><span class="shot-label">Screenshot</span> The 1962 volume with the rectangle cut out of the page<span class="shot-file">assets/images/temporal-tinkerer/21b.jpg</span></div>
+            <div class="shot"><span class="shot-label">Screenshot</span> The June 11 page with the wedding report<span class="shot-file">assets/images/temporal-tinkerer/21c.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">22</div>
+          <div class="step-body">
+            <strong>Thread B: County Records <span class="era-badge era-now">2026</span></strong>
+            <p>Talk to Marjorie: ask what is kept, then to look up a property, then about the Ashworth property. She points out Deed Book 14 in the deed room. Go through the gate and click the open page. It is dated <strong>1947</strong> but sits among entries from <strong>June 1962</strong>. Ask Marjorie about the date: the paper is too new, and the notary was a <strong>C. Vance</strong>. She suggests the church, and asks you to show her anything of the original.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The deed page dated 1947 among 1962 entries<span class="shot-file">assets/images/temporal-tinkerer/22a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">23</div>
+          <div class="step-body">
+            <strong>Thread B: The church <span class="era-badge era-now">2026</span></strong>
+            <p>Talk to the Reverend and ask for C. Vance. He sends you to the vestry. On the shelf of yearly registers, click the <strong>1962 volume</strong>; it opens on the desk. In the close-up: the marriage of <strong>Cornelius Montclair and Constance Vance</strong> in June 1962, bride aged 21. Talk to the Reverend again: she was a child in 1947, so she cannot have witnessed that deed. <strong>The deed page was forged in 1962.</strong> The register also lists Agnes as a witness.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The open 1962 marriage register<span class="shot-file">assets/images/temporal-tinkerer/23a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">24</div>
+          <div class="step-body">
+            <strong>Thread B: Agnes, the cousin <span class="era-badge era-now">2026</span></strong>
+            <p>Tell Agnes <em>&ldquo;A C. Vance notarized the 1947 deed, and you witnessed Constance Vance&rsquo;s wedding. Is she your cousin?&rdquo;</em> Constance is her cousin. She tells how Cornelius had Constance sign papers the week before the wedding, and finishes by asking to see what Tobias locked away. That puts <strong>Look in my bag</strong> on her conversation.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> Agnes asking what Tobias locked away, with the Look in my bag choice<span class="shot-file">assets/images/temporal-tinkerer/24a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">25</div>
+          <div class="step-body">
+            <strong>Show Agnes the deed photograph <span class="era-badge era-now">2026</span></strong>
+            <p>When you come back to Agnes holding the deed photograph, she is waiting for it, so her only choices are <em>Look in my bag</em> and Leave. Open the bag, select the deed photograph (from the Nov 7 safe) and click Agnes. She tells the first half: Rutherford Ashworth deeded the land to the family in 1947, Cornelius wanted the estate to live there with Constance, so the county&rsquo;s deed was swapped for a forgery in 1962 with Constance&rsquo;s name as notary, and Tobias went back to prove it. A photograph is not enough; she wants the original.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The bag open with the deed photograph selected, Agnes on the porch<span class="shot-file">assets/images/temporal-tinkerer/25a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">26</div>
+          <div class="step-body">
+            <strong>Show Marjorie the deed photo <span class="era-badge era-now">2026</span></strong>
+            <p>Back at County Records, select the deed photograph and click Marjorie. She compares it with the typed Book 14 page: the photograph shows the real deed, with the embossed county seal and a recording stamp of <strong>March 21, 1947</strong>. The vault register says the original was signed out once, on the day it was filed, by a smudged initial, and never returned. The Book 14 page was typed years later to cover for it. This adds <strong>March 21, 1947</strong> (the day it was recorded; the deed itself was drawn up on the 15th) to the Known Dates. Her <em>Look in my bag</em> choice goes away once she has confirmed the forgery.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> Marjorie comparing the photograph with Book 14<span class="shot-file">assets/images/temporal-tinkerer/26a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">27</div>
+          <div class="step-body">
+            <strong>Recover the original deed at County Records, 1947 <span class="era-badge era-47">1947</span></strong>
+            <p>Go to County Records and enter <strong>March 21, 1947</strong>; the office changes to 1947. Talk to <strong>Mr. Pruitt</strong>: ask whether the Ashworth deed has been recorded (it is in vault box nine), then select the <strong>deed photograph</strong> in your bag and click him. Tobias photographed it at this counter and told him someone would bring the photograph back. Pruitt leaves the vault open. Go through the gate to the deed room, click the vault door, then click the envelope in box nine: you now carry <strong>the original Ashworth deed</strong> (it also goes into the journal), and the deed photograph leaves your bag. Before March 21 Pruitt only says the deed is not filed yet.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> Pruitt&rsquo;s counter with the vault open<span class="shot-file">assets/images/temporal-tinkerer/27a.jpg</span></div>
+            <div class="shot"><span class="shot-label">Screenshot</span> The envelope in vault box nine<span class="shot-file">assets/images/temporal-tinkerer/27b.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">28</div>
+          <div class="step-body">
+            <strong>Show Agnes the original deed <span class="era-badge era-now">2026</span></strong>
+            <p>Back in 2026, select the original Ashworth deed and click Agnes. She tells the whole story and ends with a hint: everyone in Millhaven knows the Hollow workshop burned in June of 1962, so if Tobias kept his logbook anywhere, it was there, before the fire. If you can find it, bring it to her. You still need the logbook to learn when to find him.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> Agnes reacting to the original deed<span class="shot-file">assets/images/temporal-tinkerer/28a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">29</div>
+          <div class="step-body">
+            <strong>The hidden wedding <span class="era-badge era-62">1962</span></strong>
+            <p>The wedding report gives away a day: Saturday the ninth. Enter June 9, 1962 in the device. It is not in the Known Dates, so only a player who works it out finds it. You watch the Montclair and Vance wedding from the back of the packed church. There is nothing to do there; Back returns.</p>
+          </div>
+        </div>
+      </div>
+      <h3 id="wt-part-8">Part 8: 1962: Eleanor and the Fire</h3>
+      <p>The night of June 14, 1962. Eleanor, a young waitress, saw something she never told anyone.</p>
+      <div class="puzzle-steps">
+        <div class="puzzle-step">
+          <div class="step-num">30</div>
+          <div class="step-body">
+            <strong>Find out who Eleanor is <span class="era-badge era-now">2026</span></strong>
+            <p>In the Harwick Diner in 2026, talk to Dolores, then select the photo of Eleanor and Tobias at the fair in your bag and click her. She says it is <strong>Eleanor Reid</strong>, who ran the diner&rsquo;s night counter in the sixties and left town in about 1966. Her <em>Look in my bag</em> choice goes away once you have shown it.</p>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">31</div>
+          <div class="step-body">
+            <strong>Travel to the 1962 diner <span class="era-badge era-62">1962</span></strong>
+            <p>Standing in the diner, enter any date from <strong>June 8 to June 14, 1962</strong> (the June 14 date comes from the Gazette). You arrive in the 1962 diner.</p>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">32</div>
+          <div class="step-body">
+            <strong>Earn Eleanor&rsquo;s trust <span class="era-badge era-62">1962</span></strong>
+            <p>Ask <em>&ldquo;Are you Eleanor?&rdquo;</em> She will not talk to strangers. Close the conversation with <em>Look in my bag</em>, select the <strong>fair photo</strong>, then click Eleanor: she recognises it but wants more. Select the photo of <strong>you with Tobias</strong> and click her again (it only works after the fair photo). She believes you, and the bag choice disappears.</p>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">33</div>
+          <div class="step-body">
+            <strong>Hear what she saw <span class="era-badge era-62">1962</span></strong>
+            <p>Ask whether she was working the night of the fire. On Thursday, June 14, a little before midnight, she saw Cornelius Montclair&rsquo;s black Cadillac coming off the Hollow road with its headlights off, five days after his wedding. About an hour later the sky over the trees went orange. &ldquo;I never told a soul. Who would believe a waitress over a Montclair?&rdquo; She adds that he was in the diner most of that week, but says she has told a stranger enough for one night.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> Eleanor&rsquo;s conversation in the 1962 diner<span class="shot-file">assets/images/temporal-tinkerer/33a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">34</div>
+          <div class="step-body">
+            <strong>Ask about the week before the fire <span class="era-badge era-62">1962</span></strong>
+            <p>This topic appears only once you have heard the Cadillac story and read the wedding report in the library basement; until then, Eleanor has nothing more to say. Come back and ask whether Cornelius said anything that week. The night before the fire he sat in the booth by the window and asked what hour the Hollow road goes quiet. Ask whether he said why: he only wanted to know whether anyone passes the mill and the covered bridge after dark. This adds <strong>June 13, 1962</strong> to the Known Dates, and her journal note ends: &ldquo;Worth a look at the mill.&rdquo; That is the payoff in Part 9.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> Eleanor&rsquo;s &ldquo;week before&rdquo; answer<span class="shot-file">assets/images/temporal-tinkerer/34a.jpg</span></div>
+          </div>
+        </div>
+      </div>
+      <h3 id="wt-part-9">Part 9: 1962: Ashworth Hollow Before the Fire</h3>
+      <p>The workshop stands whole. Travel from the Hollow itself so you arrive on its street.</p>
+      <div class="puzzle-steps">
+        <div class="puzzle-step">
+          <div class="step-num">35</div>
+          <div class="step-body">
+            <strong>Travel to the Hollow in 1962 <span class="era-badge era-62">1962</span></strong>
+            <p>Stand in the Hollow and enter a date from <strong>June 8 to June 14, 1962</strong> (must not be June 15, when the fire has happened). The workshop is whole and padlocked, the cottage is lived in, and the notice board has been torn down.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The 1962 Hollow street with the whole workshop<span class="shot-file">assets/images/temporal-tinkerer/35a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">36</div>
+          <div class="step-body">
+            <strong>See the dug-up ground (June 13 and 14) <span class="era-badge era-62">1962</span></strong>
+            <p>Travel to June 13 or 14, 1962 (Eleanor&rsquo;s date) from the Hollow. Walk to the far end of the street by the mill: the ground by the bridge has been dug out, with tyre ruts from the road to the hole. Before June 13 the far end looks as it always did. Click the dug-up ground. If you have already seen the 1947 stone (the estate notice or young Amos), the journal entry reads <strong>The stone is gone</strong>: the boundary stone with the A has been dug out. Otherwise it is only <strong>A hole by the bridge</strong>: something heavy was taken, and you do not yet know what. In 2026 the bare patch at the same spot now says this is where the stone stood.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The dug-up ground with tyre ruts, June 13<span class="shot-file">assets/images/temporal-tinkerer/36a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">37</div>
+          <div class="step-body">
+            <strong>Read the caretaker&rsquo;s note <span class="era-badge era-62">1962</span></strong>
+            <p>Go up the street to the second stop and turn <strong>left</strong> to the cottage. Nobody answers the door. Click the flowerpot by the steps to read the note left there: <em>&ldquo;Tuesday, June 12, 1962. Tobias, I&rsquo;ve gone to Millhaven for the week&rsquo;s supplies, back Friday. The package is in the icehouse, where we agreed. The latch is not locked. The little key is inside with the letter. And please be careful. Someone has been asking about the workshop.&rdquo;</em> It goes into the journal.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The note under the flowerpot<span class="shot-file">assets/images/temporal-tinkerer/37a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">38</div>
+          <div class="step-body">
+            <strong>Retrieve Tobias&rsquo;s package from the icehouse <span class="era-badge era-62">1962</span></strong>
+            <p>Turn right at the second stop and click the icehouse door. Click the <strong>parcel</strong> on the stone shelf to unwrap it. Inside are a sealed <strong>letter</strong> and a <strong>small brass key</strong>; take them in either order. The letter (dated June 12, 1962, unsigned) warns Tobias not to be in the workshop after dark that week and mentions a stranger asking about the Ashworth land. It goes into the journal. The small key opens the cabinet under Tobias&rsquo;s bench in the workshop.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The parcel on the icehouse shelf<span class="shot-file">assets/images/temporal-tinkerer/38a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">39</div>
+          <div class="step-body">
+            <strong>Unlock the workshop and take the logbook <span class="era-badge era-62">1962</span></strong>
+            <p>At the first stop, turn left and click the double doors. Select the <strong>workshop key</strong> (from the safe) in your bag and click the doors: the padlock springs open and the key is used up. Click the doors again to go inside. The workshop has three views (just inside, the workbench, the blackboard wall). At the bench, click the small cabinet and use the <strong>small brass key</strong> to open it. Take the <strong>logbook</strong>: it goes into the journal and adds <strong>March 21, 1947</strong> and <strong>April 3, 1947</strong> (the boundary stone photo) to the Known Dates. It also names the Montclairs and ends the night of the fire.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The workbench cabinet and the logbook<span class="shot-file">assets/images/temporal-tinkerer/39a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">40</div>
+          <div class="step-body">
+            <strong>Show Agnes the logbook <span class="era-badge era-now">2026</span></strong>
+            <p>Back in 2026, go to Agnes&rsquo;s front room. She is seated again, because you now have something to show her (she asks only once she has seen the original deed). Close the conversation, or simply choose the logbook from her list, and show it to her. The log ends the night of the fire, June 14, 1962, and she realises Tobias never came back from it: his machine failed and he is stuck in June 1962. She tells you to go to June 15, 1962 and begin at the Hollow. This is the only place June 15, 1962 comes from: it is added to the Known Dates when she says it.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> Agnes after the logbook, the new Known Date<span class="shot-file">assets/images/temporal-tinkerer/40a.jpg</span></div>
+          </div>
+        </div>
+      </div>
+      <h3 id="wt-part-10">Part 10: 1947: The Estate at Its Best</h3>
+      <p>The deed era. The Hollow has its 1947 pictures, with the readable notice, the boundary stone and young Amos.</p>
+      <div class="puzzle-steps">
+        <div class="puzzle-step">
+          <div class="step-num">41</div>
+          <div class="step-body">
+            <strong>Travel to the Hollow in 1947 <span class="era-badge era-47">1947</span></strong>
+            <p>Stand in the Hollow and enter <strong>March 15, 1947</strong> (from the calendar) or <strong>April 3, 1947</strong>. The workshop is in daily use, smoke rises from every chimney, and the stone arch of the icehouse is clean.</p>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">42</div>
+          <div class="step-body">
+            <strong>Read the estate notice <span class="era-badge era-47">1947</span></strong>
+            <p>At the first stop, turn right to the notice board. Click the notice to read it full screen. It is signed by Rutherford Ashworth and marks the boundary at the covered bridge and a granite stone cut with the letter A. It goes into the journal.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The 1947 estate notice, full screen<span class="shot-file">assets/images/temporal-tinkerer/42a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">43</div>
+          <div class="step-body">
+            <strong>Find the boundary stone <span class="era-badge era-47">1947</span></strong>
+            <p>Walk to the far end of the street. The squared granite boundary stone, carved with an A, stands in the grass beside the bridge; in 2026 only a bare patch remains. Clicking it adds a journal entry. Seeing it here is what makes you recognise it in Part 11.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The boundary stone with the carved A beside the bridge<span class="shot-file">assets/images/temporal-tinkerer/43a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">44</div>
+          <div class="step-body">
+            <strong>Meet young Amos and take the wren <span class="era-badge era-47">1947</span></strong>
+            <p>Click the caretaker&rsquo;s cottage door: young <strong>Amos Pike</strong>. Ask who he is, about the boundary stone and about Tobias in the workshop. Then ask about his hands: <em>&ldquo;That&rsquo;s fine whittling. What are you making?&rdquo;</em> He gives you <strong>a wooden wren</strong>, and your journal notes to show it to him if you ever need a friend on this land. This is required: it opens old Amos&rsquo;s way in on June 15, 1962.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> Young Amos at the cottage door with the carving conversation<span class="shot-file">assets/images/temporal-tinkerer/44a.jpg</span></div>
+            <div class="shot"><span class="shot-label">Screenshot</span> The bag showing the wooden wren icon<span class="shot-file">assets/images/temporal-tinkerer/44b.jpg</span></div>
+          </div>
+        </div>
+      </div>
+      <h3 id="wt-part-11">Part 11: The Finale: June 15, 1962</h3>
+      <p>The rescue.</p>
+      <div class="puzzle-steps">
+        <div class="puzzle-step">
+          <div class="step-num">45</div>
+          <div class="step-body">
+            <strong>Arrive the morning after the fire <span class="era-badge era-62">1962</span></strong>
+            <p>Enter June 15, 1962 (from Agnes), from anywhere. You always arrive at the Hollow. The workshop is a smoking ruin and the tyre tracks in the ash are wide and heavy: a big car came in the night. The newspaper box now holds the Gazette of the fire. Click the caretaker&rsquo;s cottage door: Amos Pike answers, and he stays in the doorway while you talk, go to your bag and come back to him. Back closes the door.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The workshop ruin with tyre tracks<span class="shot-file">assets/images/temporal-tinkerer/45a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">46</div>
+          <div class="step-body">
+            <strong>Win Amos&rsquo;s trust with the wren <span class="era-badge era-62">1962</span></strong>
+            <p>Ask who he is and what happened: a motor in the lane after two, then smoke; he saw Tobias carried out, hands tied, into a black car that went up the road to the big house. He is wary and wants something from the Estate itself, not papers (his answer points to April 3, 1947 in your journal). Close the conversation with <em>Look in my bag</em>, select the wooden wren and click Amos: he remembers a lad fifteen years ago (1947) who looked just like you, and he trusts you. Now ask &ldquo;How do I get into the big house?&rdquo;: not by the front, but round the left side, to the barred cellar window below the new Mrs. Montclair&rsquo;s room. Then select the original deed and click him again: he tells you to take it to her. Without the wren he only hints that you must bring him something from the Estate.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> Amos at the cottage door, showing the wren<span class="shot-file">assets/images/temporal-tinkerer/46a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">47</div>
+          <div class="step-body">
+            <strong>The Ashworth house: the front <span class="era-badge era-62">1962</span></strong>
+            <p>Walk the forest path to the house; on June 15, 1962 it takes you to the manor, not the usual front. A guard stands in front of the door with arms folded, the Cadillac sits in the drive and crates are stacked on the porch. The lawn at the bottom-left does <strong>not</strong> lead round the side until Amos has told you the way: before that it only says there is a worn path and that someone nearby may know a way in. Back walks out to the Hollow.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The manor front with the guard and the Cadillac<span class="shot-file">assets/images/temporal-tinkerer/47a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">48</div>
+          <div class="step-body">
+            <strong>The stone under the hydrangeas <span class="era-badge era-62">1962</span></strong>
+            <p>At the side of the house, look low in the hydrangeas beneath the cellar window: a grey stone with a large A, fresh earth on it, two wide tyre ruts leading to it. Click it. If you have seen the 1947 stone, the journal entry <strong>The stone at the manor</strong> says it is the Hollow boundary stone, dug up and hidden here. If not, it reads <strong>A stone under the hydrangeas</strong>, an unexplained hidden stone; coming back later with the 1947 knowledge upgrades the entry to <strong>The stone is the boundary stone</strong>. It is evidence of where the Ashworth land really ends.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The manor side with the A stone in the hydrangeas<span class="shot-file">assets/images/temporal-tinkerer/48a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">49</div>
+          <div class="step-body">
+            <strong>Constance at the window <span class="era-badge era-62">1962</span></strong>
+            <p>Click the young woman at the upstairs window. She is Constance Montclair, a bride of six days (born Constance Vance, a notary&rsquo;s daughter). Ask who is in the cellar (her husband calls him a thief but hasn&rsquo;t sent for the sheriff), then ask whether she notarized a deed for him (she did, a week before the wedding, unread, signed &ldquo;C. Vance&rdquo;). Then select <strong>the original Ashworth deed</strong> in your bag and click her: the date and county seal prove the one she stamped was a lie. She will unbolt the cellar and telephone <strong>Sheriff Dunn</strong>. The barred cellar window now opens when you click it.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> Constance at the upstairs window<span class="shot-file">assets/images/temporal-tinkerer/49a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">50</div>
+          <div class="step-body">
+            <strong>Free Tobias <span class="era-badge era-62">1962</span></strong>
+            <p>Down in the cellar Tobias is tied to a chair (he speaks first). Talk to him: the broken device (cracked dial, bent coil), Cornelius&rsquo;s plan, and show him the deed and your read of his logbook if you like. Click the ropes to cut him free, then click the device on the floor: he takes it himself. Click the stairs to go up.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> Tobias tied to the chair in the cellar<span class="shot-file">assets/images/temporal-tinkerer/50a.jpg</span></div>
+          </div>
+        </div>
+        <div class="puzzle-step">
+          <div class="step-num">51</div>
+          <div class="step-body">
+            <strong>Cornelius is arrested, and you go home <span class="era-badge era-62">1962</span></strong>
+            <p>The last picture: Sheriff Dunn&rsquo;s deputies lead Cornelius Montclair off in handcuffs while Constance watches from the porch. Tobias turns the cracked dial and says they are going home. The screen fades to black and you are back in 2026: Agnes and Tobias on her porch, a warm conversation in which Tobias asks her to marry him and she is moving into the estate. Leaving it fades to black and then fades in Tobias&rsquo;s logbook, where a last entry is written out in his handwriting. When the writing finishes, <em>Click to return to the title screen</em> appears at the bottom; click to return. The story is over, so <em>Continue</em> on the title screen is greyed out. Use <em>Start New Game</em> to play again, or <em>Load Saved Game</em> for any save you made yourself.</p>
+            <div class="shot"><span class="shot-label">Screenshot</span> The arrest at the manor<span class="shot-file">assets/images/temporal-tinkerer/51a.jpg</span></div>
+            <div class="shot"><span class="shot-label">Screenshot</span> Agnes and Tobias on the porch in 2026<span class="shot-file">assets/images/temporal-tinkerer/51b.jpg</span></div>
+            <div class="shot"><span class="shot-label">Screenshot</span> The closing logbook page<span class="shot-file">assets/images/temporal-tinkerer/51c.jpg</span></div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Items &amp; Facts at a Glance</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Item</th><th>Where from</th><th>Used for</th></tr></thead>
+          <tbody>
+            <tr><td>Trunk key</td><td>Tobias's letter (mailbox)</td><td>Show Agnes; opens her attic trunk</td></tr>
+            <tr><td>House key</td><td>Under the welcome mat</td><td>Unlocks the front door</td></tr>
+            <tr><td>Photo: Eleanor &amp; Tobias, 1958</td><td>Living room mantel (2026)</td><td>Dolores names Eleanor; earns Eleanor's trust</td></tr>
+            <tr><td>Photo: Tobias &amp; you</td><td>Living room mantel (2026)</td><td>Earns Eleanor's trust</td></tr>
+            <tr><td>Time device</td><td>Agnes's trunk</td><td>All travel</td></tr>
+            <tr><td>Deed photograph</td><td>Study safe, Nov 7, 2026</td><td>Agnes (first half of the story), Marjorie (forgery), Pruitt (opens the vault). Leaves the bag when you take the original deed.</td></tr>
+            <tr><td>Workshop key</td><td>Study safe, Nov 7, 2026</td><td>Opens the padlocked workshop in 1962</td></tr>
+            <tr><td>Small brass key</td><td>Icehouse package, 1962</td><td>The cabinet under Tobias's bench in the workshop (1962)</td></tr>
+            <tr><td>The original Ashworth deed</td><td>Vault box nine, County Records, 1947</td><td>Proof for Agnes (second reveal), and for Constance and Tobias in the rescue (1962)</td></tr>
+            <tr><td>Amos's wooden wren</td><td>Young Amos, 1947 Hollow</td><td>Shown to old Amos on June 15, 1962 to win his trust (required for his way in)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Learned from</th><th>Takes you to</th></tr></thead>
+          <tbody>
+            <tr><td>Nov 9, 2026</td><td>Always known (&ldquo;Home, today&rdquo;)</td><td>The ransacked present</td></tr>
+            <tr><td>Nov 7, 2026</td><td>Tobias's letter from the trunk</td><td>The intact house (exact date)</td></tr>
+            <tr><td>March 15, 1947</td><td>Desk calendar (Nov 7)</td><td>1947 (about a week either side)</td></tr>
+            <tr><td>March 21, 1947</td><td>Marjorie Hale (with the deed photo), or Tobias's logbook</td><td>1947 (that day only; the deed recorded at County Records)</td></tr>
+            <tr><td>April 3, 1947</td><td>Tobias's logbook (also pointed to by old Amos)</td><td>1947 (about a week either side)</td></tr>
+            <tr><td>June 12, 1962</td><td>Walter Pritchard's 1962 ledger (not his conversation)</td><td>1962 (June 8 to 14): the library basement</td></tr>
+            <tr><td>June 13, 1962</td><td>Eleanor Reid, once you have read the wedding report in the library basement</td><td>1962 (June 8 to 14): the dug-up ground at the Hollow from this day</td></tr>
+            <tr><td>June 14, 1962</td><td>Gazette in the Hollow newspaper box (the only date it gives)</td><td>1962 (June 8 to 14)</td></tr>
+            <tr><td>June 15, 1962</td><td>Agnes only, after the logbook</td><td>1962 (that day only; the ruin, then the rescue at the Ashworth house)</td></tr>
+            <tr><td>June 9, 1962 (hidden)</td><td>The wedding report in the library basement says &ldquo;Saturday the ninth&rdquo;; never listed</td><td>The wedding, from the back of the church</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Change Log</h3>
+      <ul>
+        <li><strong>2026-11-24 (final edition):</strong> The GDD now describes the finished game. Open questions and generation queues are resolved or removed; the premise, arrival, tutorial, mystery, key dates and town sections were rewritten to match what was built; the walkthrough was brought up to date and the development tags removed. Gameplay and fixes in this edition: the 1962 library basement is shelved (volumes 1950&ndash;1961, a bare shelf for 1962, the crate on the left) with a new wedding report on the June 11 page (&ldquo;married on Saturday the ninth&rdquo;, no date added to the journal); Walter&rsquo;s ledger opens as a handwritten popup and its journal entry no longer says where to look; a person waiting for an item you hold now offers only <em>Look in my bag</em> and Leave (Agnes); the Back and Turn around buttons hide during conversations; the left-arrow cursor no longer sticks after a conversation opens; the Agnes doorway exit follows the doorway instead of covering her chair; the logbook choice on Agnes now works (it was keyed to the wrong journal entry); travelling between days of the same era reloads the scene, so June 13 shows the dug ground; June 15, 1962 always arrives at the Hollow; old Amos waits in the doorway while you fetch the wren; Eleanor ends her fire story by saying Cornelius was in the diner most of that week; the ending prompts &ldquo;Click to return to the title screen&rdquo; and removes the autosave so Continue is greyed out afterwards; the 2026 study filing cabinet and corkboard hotspots, the 1948 filing cabinet hotspot and the forest back-to-house button were fixed. Code: Travel/TravelManager.cs, Travel/TravelTable.cs, UI/HoverCursor.cs, UI/NavButtons.cs, UI/EndingScreen.cs, Story/TitleScreen.cs, Dialogue/Conversation.cs, Places/HistoricalSociety.cs, Places/AgnesHouse.cs, Places/Storefront.cs, Interior/Study.cs, Exterior/AshworthHollow.cs, Data/People/agnes_whitaker.json, eleanor_reid.json, tobias_ashworth.json.</li>
+        <li><strong>2026-11-24 (pictures):</strong> The wooden wren has its bag icon (ICON-WREN.png, registered for <em>amos_carving</em> in InventoryManager). The manor side picture was regenerated with the grey boundary stone and its A under the hydrangeas by the cellar window; its click area is refit to Rect2(1090, 680, 200, 200). Code: Managers/InventoryManager.cs, Places/ManorRescue.cs.</li>
+        <li><strong>2026-11-23 (June 15 and the stone):</strong> Agnes&rsquo;s logbook reply is now the only source of June 15, 1962 (the Gazette box in the Hollow adds June 14 only). The manor stone and the dug-up ground at the Hollow read differently by what you know: if you have seen the 1947 notice or young Amos, they identify the boundary stone and write the stronger journal entries (<em>stone_identified</em>); otherwise they stay vague, and returning later upgrades the entry. The 1947 icehouse stays as flavour. Code: Exterior/AshworthHollow.cs, Places/ManorRescue.cs, Data/People/agnes_whitaker.json.</li>
+        <li><strong>2026-11-23 (young Amos&rsquo;s wren):</strong> Young Amos has a fourth topic (his whittling) that gives a wooden wren. On June 15, 1962 old Amos asks for something from the Estate itself, not papers; showing the wren makes him trust you (&ldquo;fifteen years ago, a lad who looked just like you&rdquo;), and only then does he tell you the way in. The way-in topic needs that trust. Showing him the original deed gets his reaction. The side-of-the-house exit and its hotspot stay off until he has told you (before then the lawn only says there is a worn path and someone may know a way in). Code: Data/People/amos_pike.json, amos_pike_1947.json, Places/ManorRescue.cs.</li>
+        <li><strong>2026-11-23 (library basement made required):</strong> Walter no longer gives June 12 in conversation; the ledger on the stool gives it and a journal entry that sends you to the library wing. The June 11 page in the 1962 volume carries a boxed wedding report (<em>lib62_wedding_notice</em>, no date added). Eleanor&rsquo;s week-before topic only opens once you have seen Cornelius at the diner and read that report; it gives June 13 and a hint about the mill. The June 13 Hollow picture (dug-up ground) is built, with its own click area and journal entry. Code: Places/Storefront.cs, Places/HistoricalSociety.cs, Exterior/AshworthHollow.cs, Data/People/eleanor_reid.json, walter_pritchard.json.</li>
+        <li><strong>2026-11-23 (deed flow):</strong> Agnes&rsquo;s cousin topic ends by asking what Tobias locked away; the deed photograph gives the first half and asks for the original; the original gives the whole story and the logbook hint; the logbook then ends the thread and gives June 15. Taking the original deed removes the deed photograph from the bag. Marjorie&rsquo;s date answer ends by asking to see anything of the original, and she accepts the original deed too. Code: Data/People/agnes_whitaker.json, marjorie_hale.json, Managers/InventoryManager.cs.</li>
+        <li><strong>2026-11-23 (conversations and bag):</strong> All named characters now alternate their line, the player&rsquo;s line, their line. <em>Look in my bag</em> appears only while the character is expecting something and closes once what they wanted has been shown (Agnes, Marjorie, Eleanor, Dolores, Pruitt, Constance, Amos). The Town Back button sits bottom-left beside the journal. The study toast about the deed photograph only shows once Agnes has asked for it.</li>
+        <li><strong>2026-11-22 (Marjorie and the original deed):</strong> Marjorie no longer says the original deed was signed out in June 1962. The vault register now shows it signed out once, on the day it was filed (March 21, 1947), with a smudged initial, and never returned, which is the player taking it from box nine. The Book 14 page was typed years later to cover for it. Her journal note says the same.</li>
+        <li><strong>2026-11-22 (archive, closing screen, pictures):</strong> The 1962 Gazette archive is built: in 1962 the Historical Society building is the library wing, so it opens the door marked GAZETTE ARCHIVE (three pictures: the stairs, the stacked volumes, the 1962 volume with a rectangle cut from its June pages). Finding the crate and examining the cut adds the journal entry "The Gazette volume, June 1962" and sets the Society gap, so Reginald's lead works from either era. The closing screen is now Tobias's logbook: the open logbook fades in and a last entry ("Nov. 9, 2026. Home. ...") is written in the handwriting font; a click returns to the title. The epilogue now uses the real Agnes-and-Tobias picture. Young Amos has his own cottage-door picture (1947). The 1947 study desk and bookcase pictures are in (new telephone, antique estate map); the old 1947 map click area was re-fitted to the new map. Code: Places/HistoricalSociety.cs (Build1962), UI/EndingScreen.cs, Places/AgnesEpilogue.cs.</li>
+        <li><strong>2026-11-22 (options and epilogue):</strong> The Options page is built (title screen and in-game menu): music and sound volume (audio buses "Music" and "SFX", ready for any future audio), how long messages stay (Normal, Long, Longer, or long ones wait for a click; message time now also grows with the message length), conversation text speed (instant to slow, a click shows the whole line), fullscreen, and beginner hints (a twinkling star over the centre of every clickable thing). Settings are saved separately from game saves. After the rescue the game now goes home to 2026: Agnes and Tobias at her door (warm epilogue conversation: Tobias has asked Agnes to marry him and she is moving into the estate), then the closing screen and the title. The 1947 caretaker is the young Amos Pike, with his own cottage-door view and a short three-question conversation (who he is, the boundary stone, Tobias in the workshop). Sheriff Dunn stays off screen by design.</li>
+        <li><strong>2026-11-22 (playtest fixes 4):</strong> Items are now used on people from the bag: a conversation never lists an inventory item. Select the item (a photo, the deed), then click the person; the right item gets their "show" reply, a wrong one their fallback line, and the item is put away again (journal-entry shows stay as choices once the conversation reaches them). Eleanor's Tobias photo only works after the fair photo. Constance, Tobias and Amos now go step by step. The workshop padlock needs the workshop key selected from the bag and uses it up. The 1947 notice is signed by Rutherford Ashworth, the boundary stone adds a journal entry, and reading the Gazette adds both June 14 and June 15, 1962 to Known Dates. Amos has a cottage-door view (picture and delayed greeting, like Agnes). After the fire the path-mouth view uses the ruin picture (temporary until the new picture exists). The rescue ends with a fade to black and the title screen. The manor side picture is mirrored with its click areas. Logbook text clears the spine.</li>
+        <li><strong>2026-11-21 (playtest fixes 3):</strong> Reginald now sends you through the reading room and down to the door marked Gazette Archive. The deed page in Deed Book 14 now reads "Recorded March 21, 1947" to match the journal, Pruitt, Tobias's note and the travel date (picture retouched). The 1962 marriage register is added to the journal with both wedding witnesses, Howard L. Vance and Agnes M. Whitaker, and the Reverend's note mentions them. Agnes's cousin topic now has the player raise the notary first ("A C. Vance notarized the 1947 deed, and you witnessed Constance Vance's wedding. Is she your cousin?"). The Really? delete button stays red under the mouse. The Study desk and 2026 walls were redrawn: the corkboard moved to the door wall (desk view), a filing cabinet holds the baptismal record (its open-drawer close-up and certificate in Cinzel Decorative and EB Garamond), and the 1947 pictures need redoing to match. Save slots show the era code while testing.</li>
+        <li><strong>2026-11-21 (delete saves):</strong> Every used slot on the Save and Load pages now has a Delete button beside it (click once for "Really?", again to delete; the autosave can be deleted too). If every save is deleted from the title screen, Continue and Load Saved Game grey out. The Menu button also hides while a full-screen page is open so it never covers a close button (it was covering the safe close-up X).</li>
+        <li><strong>2026-11-21 (menu and cursor):</strong> The Menu button now always sits in the top-right corner and the cutscene Skip button sits to its left (it only shows when needed). The pause menu and title screen have an Options button, disabled for now (to be designed). Every full-screen page (bag, journal, save/load, pause menu, papers, newspapers, conversations, time device, popups, room close-ups) now uses a shared ModalGate, so hotspots underneath stand down and the cursor no longer flickers between the pointing hand and the up arrow. New pages opt in with one line: ModalGate.WhileInTree(this) or ModalGate.WhileVisible(item).</li>
+        <li><strong>2026-11-21 (saving):</strong> Save system built: autosave (slot 0) whenever a scene loads or something important is gained, five manual slots on a Save/Load page, a Menu button (top right: Resume, Save Game, Load Game, Quit to Title), and Continue / Load Saved Game on the title screen. Saves are JSON files in the user folder (user://saves/). Start New Game resets everything. Code: Main/Scripts/Save/ (SaveSystem, SaveData, SaveManager, SaveLoadPage).</li>
+        <li><strong>2026-11-21 (startup screen):</strong> The game now opens on a startup screen (picture, title, Start New Game, Load Saved Game disabled until the save system exists, Quit). It is the main scene; Start New Game goes to the name screen and the opening. Menu items are one line each in TitleScreen.BuildMenu().</li>
+        <li><strong>2026-11-21 (player name):</strong> New game starts with a "What is your name?" screen. The name fills {player} / {Player} in letters, journal entries, messages and dialogue (blank keeps "kiddo"). Reusable: PlayerProfile + NameEntry. To do later: save system with a page of 5 save slots (the name is stored in PlayerProfile.Name).</li>
+        <li><strong>2026-11-21 (lost in the forest):</strong> After 15 fork pictures in the forest, a "Back to the house" button appears (the same one as in MillHaven, now reusable via NavButtons.Create(..., right: true)); if the trail note was never taken, a toast also hints at the clue at the house. The woods keep going.</li>
+        <li><strong>2026-11-20 (letters):</strong> Multi-page papers (the instructions letter, the icehouse letter) now share one font size across their pages, and the instructions letter text is split evenly between the two pages.</li>
+        <li><strong>2026-11-20 (playtest fixes):</strong> Travel's Back button and a second jump now work from any screen, including the code-built attic trunk. The journal's Dates page lists dates only and the right page gives the details without repeating them. Both forest signs are journaled under Notes. A wrong Millhaven turn now sends you wandering in a cooler tint; the woods keep going and nothing sends you back on its own. The study's bookcase, lower cabinet (baptismal record in the intact Nov 7, 2026 study and in 1947) and left-wall pinboard are clickable; the wastebasket is cut; the drawer note is titled "A handwritten note". The living-room door is also reachable from the study end of the hallway (right arrow, needs a new open-door picture).</li>
+        <li><strong>2026-11-20 (rescue finale):</strong> June 15, 1962 is a new key date. The Hollow workshop is a smoking ruin that morning (new picture, tyre tracks, no way inside), the newspaper box holds the fire Gazette, and the caretaker <strong>Amos Pike</strong> answers the cottage door. The forest path leads to the Ashworth house (new <code>ManorRescue</code> place: front with the guard and Cadillac, the side with Constance at her window, the cellar with Tobias, the arrest picture). Shown the original deed, Constance unbolts the cellar and calls the sheriff; Tobias is freed, takes his device, and the game ends the scene by travelling home to 2026. Travelling between two dates of one era now redraws the place.</li>
+        <li><strong>2026-11-20 (Agnes):</strong> Agnes now tells the story in two parts: with the deed photograph she explains the forgery and Cornelius's motive; with the original deed and then Tobias's logbook she realises Tobias is stuck in 1962 and tells you to go to June 15, 1962. In her front room she sits in the chair (new picture) only while she has something new to say. The cursor now shows straight away when a new picture appears under a resting mouse. In 2026 County Records, the open book is a pointing-hand interaction and the three bookcases give the bookcase line.</li>
+        <li><strong>2026-11-20 (records office 1947):</strong> County Records now exists in 1947 (Mr. Pruitt, the deed room, the vault, box nine). March 21, 1947 is a new key date. Showing Pruitt the deed photograph opens the vault; taking the envelope gives the original deed. The 2026 records pictures moved to <code>Records/E26/</code>. The walkthrough has a section index.</li>
+        <li><strong>2026-11-20 (workshop):</strong> The 1962 workshop interior is built: three views, a cabinet opened by the small brass key, and Tobias's logbook (dates in 1947 and the days up to the fire). Travelling away from 1962 while inside puts you back at the Hollow.</li>
+        <li><strong>2026-11-20 (later):</strong> Marjorie now reacts to the deed photograph (the forgery is confirmed, and March 21, 1947, the day it was recorded, is added to the Known Dates). Agreed story plan: Tobias is lost in 1962 after the fire; the deed photograph leads to the 1947 County Records clerk for the original deed; then Agnes explains the rest and gives the date to find Tobias. The workshop interior will hold Tobias's logbook.</li>
+        <li><strong>2026-11-20:</strong> Agnes's house now starts on the closed door; knocking shows Agnes at the door, and after she trusts you the open porch leads inside. The town no longer has a Walk on button (the cursors do the walking) and the street picture also walks on when you click Agnes's house. The trunk key is used up when it opens the trunk. The 1962 icehouse package (letter and small brass key) is built. The 1947 study door picture was redone. The house is closed to the player in 1962 and relocates them outside if they travel there from inside.</li>
+        <li><strong>2026-11-19 (later):</strong> The instructions letter now gives the Nov 7, 2026 date, and the date is added to the Known Dates when the letter is read.</li>
+        <li><strong>2026-11-19:</strong> Section created from the game as built. Includes the Hollow in all three eras (1947 pictures and notice, 1962 pictures and caretaker's note), the forest signs, MillHaven, the study safe and the device.</li>
+      </ul>
+    </section>
+
+    <section id="tbd">
+      <h2>Design Decisions</h2>
+      <p>Every question raised during design is settled. This is the record.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Question</th><th>Status</th><th>Outcome</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Uncle's first name</strong></td><td><span class="status-dot status-locked"></span> Locked</td><td>Tobias Ashworth. Appears in the letter, journals and town records.</td></tr>
+            <tr><td><strong>Antagonist family</strong></td><td><span class="status-dot status-locked"></span> Locked</td><td>Montclair. Cornelius Montclair, 1962.</td></tr>
+            <tr><td><strong>Device hiding spot</strong></td><td><span class="status-dot status-locked"></span> Locked</td><td>No hiding spot: the device is in Agnes's attic trunk; the key arrives with the opening letter.</td></tr>
+            <tr><td><strong>Uncle's fate</strong></td><td><span class="status-dot status-locked"></span> Locked</td><td>Held in the cellar of the Ashworth house on June 15, 1962, stuck there because the device was damaged. The player frees him and they return to Nov 9, 2026.</td></tr>
+            <tr><td><strong>Per-room puzzle designs</strong></td><td><span class="status-dot status-locked"></span> Locked</td><td>Built; see the walkthrough.</td></tr>
+            <tr><td><strong>Ashworth Hollow arrival view and the burned workshop</strong></td><td><span class="status-dot status-locked"></span> Locked</td><td>The Hollow is a three-stop street. The burned-workshop picture is reused for the Gazette's front-page photograph.</td></tr>
+            <tr><td><strong>Newspaper: the workshop fire</strong></td><td><span class="status-dot status-locked"></span> Locked</td><td>Friday, June 15, 1962 front page, found only in the newspaper box at the Hollow in 2026. It gives June 14 as a Known Date, not June 15.</td></tr>
+            <tr><td><strong>Where June 15, 1962 comes from</strong></td><td><span class="status-dot status-locked"></span> Locked</td><td>Agnes only, after she has read the logbook.</td></tr>
+            <tr><td><strong>The ransacked room on the left of the hallway</strong></td><td><span class="status-dot status-locked"></span> Locked</td><td>The living room, with the two framed photographs on the mantel. 2026 only.</td></tr>
+            <tr><td><strong>The opening letter</strong></td><td><span class="status-dot status-locked"></span> Locked</td><td>Tobias's letter, with the trunk key; if anything happens to him, it tells the player to see Agnes.</td></tr>
+            <tr><td><strong>Agnes Mae Whitaker and the trunk</strong></td><td><span class="status-dot status-locked"></span> Locked</td><td>MillHaven is a separate town from Ashworth Hollow (sign: EST. 1887). Agnes keeps the trunk; inside are the device and Tobias's second letter.</td></tr>
+            <tr><td><strong>Woods pictures</strong></td><td><span class="status-dot status-locked"></span> Locked</td><td>Twelve images, six straight and six forks, in the game.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ─── SCOPE ─── -->
+    <section id="scope">
+      <h2>Scope at Release</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Category</th><th>What shipped</th></tr></thead>
+          <tbody>
+            <tr><td>Eras</td><td>Four: the present (Nov 2026), two days earlier (Nov 7, 2026), 1947 and June 1962 (the days before the fire, and the morning after)</td></tr>
+            <tr><td>Walkthrough</td><td>11 parts, 51 steps</td></tr>
+            <tr><td>Key dates</td><td>7, plus one secret (the wedding, June 9, 1962)</td></tr>
+            <tr><td>Places</td><td>The house (foyer, living room, study, workshop), the forest paths (12 pictures), Ashworth Hollow in all three eras, the Ashworth house in 1962, and the MillHaven hub with six buildings (Agnes's house, the Historical Society and library wing, the storefront, County Records, the church, the diner)</td></tr>
+            <tr><td>Characters with conversations</td><td>11: Agnes, Constance, Dolores, Eleanor, Marjorie, Mr. Pruitt, Reginald, the Reverend, Tobias, Walter and Amos (young and old)</td></tr>
+            <tr><td>Items</td><td>10, listed in the walkthrough</td></tr>
+            <tr><td>Ending</td><td>The rescue, Cornelius's arrest, the porch scene in 2026 with Agnes and Tobias, and the closing logbook page</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Wander mode in the woods is a shader on the existing woods pictures, so it needed no extra art.</p>
+    </section>
+
+  </main>
+</div>
+
+<script>
+function toggleTheme() {
+  const root = document.documentElement;
+  const current = root.getAttribute('data-theme');
+  root.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+}
+
+function copyPrompt(btn) {
+  const block = btn.parentElement;
+  const text = block.textContent
+    .replace('Copy', '')
+    .replace(/^[A-Z0-9-]+$\n/m, '')
+    .trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1800);
+  }).catch(() => {
+    const sel = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(block);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    btn.textContent = 'Selected';
+    setTimeout(() => btn.textContent = 'Copy', 1800);
+  });
+}
+
+// Active nav on scroll
+const sections = document.querySelectorAll('section[id]');
+const links = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-52px 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body></html>
+</body></html>
